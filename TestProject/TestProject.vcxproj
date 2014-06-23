@@ -80,14 +80,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DataFile.cpp" />
     <ClCompile Include="GraphForm.cpp" />
+    <ClCompile Include="MethaneData.cpp" />
+    <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="MainForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataFile.h" />
     <ClInclude Include="GraphForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="MethaneData.h" />
+    <ClInclude Include="Properties.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Settings.h">
       <FileType>CppForm</FileType>
