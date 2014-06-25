@@ -82,6 +82,8 @@
   <ItemGroup>
     <ClCompile Include="DataFile.cpp" />
     <ClCompile Include="GraphForm.cpp" />
+    <ClCompile Include="MainProc.cpp" />
+    <ClCompile Include="MethaneChart.cpp" />
     <ClCompile Include="MethaneData.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Settings.cpp" />
@@ -92,6 +94,8 @@
     <ClInclude Include="GraphForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="MainProc.h" />
+    <ClInclude Include="MethaneChart.h" />
     <ClInclude Include="MethaneData.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="resource.h" />

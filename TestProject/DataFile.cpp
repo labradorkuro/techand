@@ -8,6 +8,7 @@
 using namespace System;
 using namespace System::Text;
 using namespace System::Collections;
+using namespace System::Collections::Generic;
 using namespace System::IO;
 
 
@@ -17,7 +18,7 @@ namespace MethaneGasConcentrationProject {
 	DataFile::DataFile()
 	{
 	}
-	int DataFile::readFile(String^ fileName) {
+	int DataFile::readFile(String^ fileName, List<MethaneData^>^ datalist) {
 		int rc = 0;
 		try
 		{
@@ -27,7 +28,7 @@ namespace MethaneGasConcentrationProject {
 				String^ str;
 				String^ delimStr = ",";
 				array<Char>^ delimiter = delimStr->ToCharArray();
-				datalist = gcnew Generic::List<MethaneData^>();
+//				datalist = gcnew Generic::List<MethaneData^>();
 				while ((str = din->ReadLine()) != nullptr)
 				{
 					array<String^>^ line = str->Split(delimiter);
@@ -90,5 +91,7 @@ namespace MethaneGasConcentrationProject {
 		}
 		return rc;
 	}
-
+	bool DataFile::existsFile(String^ fileName) {
+		return File::Exists(fileName);
+	}
 }

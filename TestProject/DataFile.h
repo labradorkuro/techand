@@ -5,19 +5,20 @@ author:Takenori Tanaka(niigata-sl.com)
 */
 
 #include "MethaneData.h"
+using namespace System::Collections::Generic;
 
 #pragma once
 namespace MethaneGasConcentrationProject {
 	ref class DataFile
 	{
 	private:
-		System::Collections::Generic::List<MethaneData^>^ datalist;
+		List<MethaneData^>^ datalist;
 
 	public:
 		DataFile();
-		int readFile(String^ fileName);
+		int readFile(String^ fileName, List<MethaneData^>^ datalist);
 		int writeFile(String^ fileName, MethaneData^ data);
-
+		bool existsFile(String^ fileName);
 	};
 }
 

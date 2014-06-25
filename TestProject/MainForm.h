@@ -7,11 +7,12 @@ author:Takenori Tanaka(niigata-sl.com)
 #pragma once
 #include <Windows.h>
 //#include <TdRTR500CommLib.h>
-
 #include "GraphForm.h"
 #include "Settings.h"
 #include "Properties.h"
 #include "DataFile.h"
+#include "MethaneChart.h"
+#include "MainProc.h"
 
 namespace MethaneGasConcentrationProject {
 	
@@ -23,7 +24,7 @@ namespace MethaneGasConcentrationProject {
 	using namespace System::Drawing;
 	using namespace System::Runtime::InteropServices;
 
-
+	
 	/// <summary>
 	/// MainForm の概要
 	/// </summary>
@@ -36,15 +37,16 @@ namespace MethaneGasConcentrationProject {
 			//
 			//TODO: ここにコンストラクター コードを追加します
 			//
-			readProperties();
-			this->timer1->Interval = properties->getInterval();
-			this->timer1->Enabled = true;
 
-			dataFile = gcnew DataFile();
+			// メタン濃度計測プログラムメイン処理クラス生成
+			mainProc = gcnew MainProc(chart1);
+			// タイマー設定
+			this->timer1->Interval = mainProc->getInterval();
+			this->timer1->Enabled = true;
 		}
-		int dataFileRead();
 		void setMethaneConcentration(float val);
 		void setTemperature(float val);
+		Chart^ getChartControl();
 	protected:
 		/// <summary>
 		/// 使用中のリソースをすべてクリーンアップします。
@@ -115,10 +117,7 @@ namespace MethaneGasConcentrationProject {
 //			memset((void*)portInfo, 0, 256);
 //			rtn = TdRTR500_GetConnectNum(portInfo, 256, 0x0500, 0);
 		}
-	private: Properties^ properties;
-	private: DataFile^ dataFile;
-
-	private: System::Void readProperties();
+	private:  MainProc^ mainProc;
 	private: System::ComponentModel::IContainer^  components;
 			 /// <summary>
 		/// 必要なデザイナー変数です。
@@ -133,11 +132,11 @@ namespace MethaneGasConcentrationProject {
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
-			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-			System::Windows::Forms::DataVisualization::Charting::Legend^  legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::Title^  title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^  legend2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series4 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::Title^  title2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
 			this->panel2 = (gcnew System::Windows::Forms::Panel());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->labelTemp = (gcnew System::Windows::Forms::Label());
@@ -169,15 +168,15 @@ namespace MethaneGasConcentrationProject {
 			this->button5 = (gcnew System::Windows::Forms::Button());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->panel3 = (gcnew System::Windows::Forms::Panel());
-			this->panel4 = (gcnew System::Windows::Forms::Panel());
 			this->panel5 = (gcnew System::Windows::Forms::Panel());
+			this->panel4 = (gcnew System::Windows::Forms::Panel());
 			this->panel2->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
 			this->flowLayoutPanel1->SuspendLayout();
 			this->panel3->SuspendLayout();
-			this->panel4->SuspendLayout();
 			this->panel5->SuspendLayout();
+			this->panel4->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// panel2
@@ -379,31 +378,34 @@ namespace MethaneGasConcentrationProject {
 			// 
 			// chart1
 			// 
-			chartArea1->Name = L"ChartArea1";
-			this->chart1->ChartAreas->Add(chartArea1);
+			chartArea2->Name = L"ChartArea1";
+			this->chart1->ChartAreas->Add(chartArea2);
 			this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
-			legend1->Name = L"Legend1";
-			this->chart1->Legends->Add(legend1);
+			legend2->Name = L"Legend1";
+			this->chart1->Legends->Add(legend2);
 			this->chart1->Location = System::Drawing::Point(0, 0);
 			this->chart1->Name = L"chart1";
-			series1->ChartArea = L"ChartArea1";
-			series1->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series1->Legend = L"Legend1";
-			series1->Name = L"ガス濃度";
-			series1->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
-			series2->ChartArea = L"ChartArea1";
-			series2->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series2->Legend = L"Legend1";
-			series2->Name = L"温度";
-			series2->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
-			this->chart1->Series->Add(series1);
-			this->chart1->Series->Add(series2);
-			this->chart1->Size = System::Drawing::Size(1305, 387);
+			series3->ChartArea = L"ChartArea1";
+			series3->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series3->Legend = L"Legend1";
+			series3->MarkerBorderWidth = 3;
+			series3->Name = L"ガス濃度";
+			series3->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
+			series4->ChartArea = L"ChartArea1";
+			series4->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series4->Legend = L"Legend1";
+			series4->Name = L"温度";
+			series4->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
+			this->chart1->Series->Add(series3);
+			this->chart1->Series->Add(series4);
+			this->chart1->Size = System::Drawing::Size(1305, 426);
 			this->chart1->TabIndex = 4;
 			this->chart1->Text = L"chart1";
-			title1->Name = L"Title1";
-			title1->Text = L"ガス濃度";
-			this->chart1->Titles->Add(title1);
+			title2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			title2->Name = L"Title1";
+			title2->Text = L"ガス濃度";
+			this->chart1->Titles->Add(title2);
 			// 
 			// flowLayoutPanel1
 			// 
@@ -485,8 +487,17 @@ namespace MethaneGasConcentrationProject {
 			this->panel3->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->panel3->Location = System::Drawing::Point(0, 27);
 			this->panel3->Name = L"panel3";
-			this->panel3->Size = System::Drawing::Size(1305, 687);
+			this->panel3->Size = System::Drawing::Size(1305, 726);
 			this->panel3->TabIndex = 10;
+			// 
+			// panel5
+			// 
+			this->panel5->Controls->Add(this->chart1);
+			this->panel5->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel5->Location = System::Drawing::Point(0, 300);
+			this->panel5->Name = L"panel5";
+			this->panel5->Size = System::Drawing::Size(1305, 426);
+			this->panel5->TabIndex = 11;
 			// 
 			// panel4
 			// 
@@ -498,20 +509,11 @@ namespace MethaneGasConcentrationProject {
 			this->panel4->Size = System::Drawing::Size(1305, 300);
 			this->panel4->TabIndex = 10;
 			// 
-			// panel5
-			// 
-			this->panel5->Controls->Add(this->chart1);
-			this->panel5->Dock = System::Windows::Forms::DockStyle::Fill;
-			this->panel5->Location = System::Drawing::Point(0, 300);
-			this->panel5->Name = L"panel5";
-			this->panel5->Size = System::Drawing::Size(1305, 387);
-			this->panel5->TabIndex = 11;
-			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1305, 714);
+			this->ClientSize = System::Drawing::Size(1305, 753);
 			this->Controls->Add(this->panel3);
 			this->Controls->Add(this->menuStrip1);
 			this->MainMenuStrip = this->menuStrip1;
@@ -525,8 +527,8 @@ namespace MethaneGasConcentrationProject {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->EndInit();
 			this->flowLayoutPanel1->ResumeLayout(false);
 			this->panel3->ResumeLayout(false);
-			this->panel4->ResumeLayout(false);
 			this->panel5->ResumeLayout(false);
+			this->panel4->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -549,48 +551,8 @@ private: System::Void TermGraphToolStripMenuItem_Click(System::Object^  sender, 
 			 gf->Show();
 }
 private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e) {
-//			 this->timer1->Interval = 600000;
-//			 this->timer1->Enabled = true;
 }
 // タイマー起動
-private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
-			 float methane = 20.05;
-			 float temp = 19.9;
-			 float corrected = 21.23;
-			 // 現在時間取得
-			 String^ datetime = Convert::ToString(DateTime::Now);
-			 String^ delimiter = " ";
-			 String^ delimiter_ymd = "_";
-			 // 日付と時間を分離
-			 array<String^>^ dt = datetime->Split(delimiter->ToCharArray());
-			 this->setMethaneConcentration(methane);
-			 this->labelMethane->Refresh();
-			 MethaneData^ data = gcnew MethaneData();
-			 data->setDateString(dt[0]);
-			 data->setTimeString(dt[1]);
-			 data->setC0(methane);
-			 data->setC(corrected);
-			 data->setT(temp);
-
-			 // データファイル処理
-			 String^ fn = dt[0]->Replace("/", "_");
-			 // 年、月、日を分離
-			 array<String^>^ ymd = fn->Split(delimiter_ymd->ToCharArray());
-			 // 日次データファイル名
-			 String^ dataFileName = System::IO::Directory::GetCurrentDirectory() + "\\" + "data\\" + fn + ".cvs";
-			 // 月次データファイル名
-			 String^ MonthlyDataFileName = System::IO::Directory::GetCurrentDirectory() + "\\" + "data\\" + ymd[0] + "_" + ymd[1] + ".cvs";
-			 // ファイル追加書き出し（ファイルがない時は新規作成される。）
-			 int rc = dataFile->writeFile(MonthlyDataFileName, data);
-			 if (rc < 0) {
-				 // Error
-			 }
-			 rc = dataFile->writeFile(dataFileName, data);
-			 if (rc < 0) {
-				 // Error
-			 }
-
-			 //this->chart1->Series["温度"]->Points->Add()
-}
+private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e);
 };
 }
