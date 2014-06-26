@@ -10,8 +10,9 @@ using namespace MethaneGasConcentrationProject;
 [STAThreadAttribute]
 int main() {
 	MainForm ^fm = gcnew MainForm();
-	fm->setMethaneConcentration(55.45f);
-	fm->setTemperature(19.89f);
+	fm->setMethaneConcentration(0.0f);
+	fm->setTemperature(0.0f);
+	fm->onTimer();
 	fm->ShowDialog();
 	return 0;
 }
@@ -22,19 +23,25 @@ Chart^ MainForm::getChartControl() {
 //}
 void MainForm::setMethaneConcentration(float val) {
 	labelMethane->Text = val.ToString("F1");
+	labelMethane->Refresh();
 }
 
 void MainForm::setTemperature(float val) {
 	labelTemp->Text = val.ToString("F1");
-	labelMethane->Refresh();
+	labelTemp->Refresh();
 
 }
 
+void MainForm::onTimer() {
+	MethaneData^ data = mainProc->onTimer();
+	this->setMethaneConcentration(data->getC0());
+	this->setTemperature(data->getT());
+
+}
 //
 // タイマー処理
 System::Void MainForm::timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
-	MethaneData^ data = mainProc->onTimer();
-	this->setMethaneConcentration(data->getC());
+	onTimer();
 	/*
 	float methane = 20.05;
 	float temp = 19.9;

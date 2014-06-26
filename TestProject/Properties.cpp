@@ -18,7 +18,11 @@ using namespace std;
 namespace MethaneGasConcentrationProject {
 	Properties::Properties()
 	{
-		readFile();
+		int rc = readFile();
+		if (rc == -1) {
+			// File Not Found
+			setDataFolder(System::IO::Directory::GetCurrentDirectory() + "\\" + "data");
+		}
 	}
 
 	int Properties::readFile() {
@@ -40,7 +44,7 @@ namespace MethaneGasConcentrationProject {
 					array<String^>^ properties = str->Split(delimiter);
 					for (int i = 0; i < properties->Length; i++) {
 						array<String^>^ prop = properties[i]->Split(delimiterProp);
-						if (prop->Length == 2) {
+						if (prop->Length >= 2) {
 							if (String::Compare(prop[0], "Interval") == 0) {
 								int number;
 								bool result = Int32::TryParse(prop[1], number);
@@ -52,7 +56,11 @@ namespace MethaneGasConcentrationProject {
 								}
 							}
 							else if (String::Compare(prop[0], "DataFolder") == 0){
-								setDataFolder(prop[1]);
+								String^ f = prop[1];
+								for (int j = 2; j < prop->Length; j++) {
+									f += ":" + prop[j];
+								}
+								setDataFolder(f);
 							}
 							else if (String::Compare(prop[0], "Port") == 0){
 								setPortNo(prop[1]);
@@ -82,6 +90,22 @@ namespace MethaneGasConcentrationProject {
 	}
 	int Properties::writeFile() {
 		int rc = 0;
+		String^ fileName = System::IO::Directory::GetCurrentDirectory() + "\\" + propertyFileName;
+		try
+		{
+			String^ line = "Interval:" + getInterval() + ",DataFolder:" + getDataFolder() + ",Port:" + getPortNo();
+			try {
+				File::WriteAllText(fileName, line);
+			}
+			finally
+			{
+			}
+		}
+		catch (Exception^ e)
+		{
+			Console::WriteLine("problem writing file '{0}'", fileName);
+			rc = -2;
+		}
 		return rc;
 	}
 

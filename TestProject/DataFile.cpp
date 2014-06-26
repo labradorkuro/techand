@@ -4,6 +4,7 @@
 	author:Takenori Tanaka(niigata-sl.com)
 */
 #include "DataFile.h"
+#include "LogFile.h"
 
 using namespace System;
 using namespace System::Text;
@@ -65,8 +66,14 @@ namespace MethaneGasConcentrationProject {
 
 	int DataFile::writeFile(String^ fileName, MethaneData^ data) {
 		int rc = 0;
+		String^ path = fileName;
+		int inx = path->LastIndexOf("\\");
+		path = path->Substring(0, inx);
 		try
 		{
+			if (!Directory::Exists(path)) {
+				Directory::CreateDirectory(path);
+			}
 			StreamWriter^ dout = File::AppendText(fileName);
 			try {
 
@@ -86,6 +93,7 @@ namespace MethaneGasConcentrationProject {
 		}
 		catch (Exception^ e)
 		{
+			LogFile::writeFile("データファイルの書込みが出来ませんでした");
 			Console::WriteLine("problem writing file '{0}'", fileName);
 			rc = -2;
 		}

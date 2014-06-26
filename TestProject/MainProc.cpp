@@ -1,0 +1,123 @@
+#include "MainProc.h"
+using namespace System::Collections;
+
+namespace MethaneGasConcentrationProject {
+
+	MainProc::MainProc(Chart^ c)
+	{
+		readProperties(c);
+		//onTimer();
+	}
+	
+	System::Void MainProc::readProperties(Chart^ c) {
+		properties = gcnew Properties();
+		dataFile = gcnew DataFile();
+		trendData = gcnew Generic::List<MethaneData^>();
+		trendChart = gcnew MethaneChart(c);
+
+		trendChart->drawChart(trendData);
+
+	}
+	int MainProc::reloadProperties() {
+		return properties->readFile();
+	}
+	Properties^ MainProc::getProperties() {
+		return properties;
+	}
+	int MainProc::getInterval() {
+		return properties->getInterval();
+	}
+	String^ MainProc::getDailyFileNameFromDateTime(DateTime^ date) {
+		String^ datetime = Convert::ToString(date);
+		String^ delimiter = " ";
+		String^ delimiter_ymd = "_";
+		// 日付と時間を分離
+		array<String^>^ dt = datetime->Split(delimiter->ToCharArray());
+		String^ fn = dt[0]->Replace("/", "_");
+		// 日次データファイル名
+		return fn;
+	}
+
+	String^ MainProc::getMonthlyFileNameFromDateTime(DateTime^ date) {
+		String^ datetime = Convert::ToString(date);
+		String^ delimiter = " ";
+		String^ delimiter_ymd = "_";
+		// 日付と時間を分離
+		array<String^>^ dt = datetime->Split(delimiter->ToCharArray());
+		String^ fn = dt[0]->Replace("/", "_");
+		// 年、月、日を分離
+		array<String^>^ ymd = fn->Split(delimiter_ymd->ToCharArray());
+		// 月次データファイル名
+		return ymd[0] + "_" + ymd[1];
+
+	}
+
+	// タイマー処理
+	MethaneData^ MainProc::onTimer() {
+		// 現在時間取得
+		DateTime^ now = DateTime::Now;
+		DateTime^ lastWeek = now->AddDays(-6);	// 1週間前から
+
+		// ここでおんどとりからデータを取得する
+		float methane = now->Minute;
+		float temp = now->Hour;
+		float corrected = 21.23;
+
+
+		String^ datetime = Convert::ToString(now);
+		String^ delimiter = " ";
+		String^ delimiter_ymd = "_";
+		// 日付と時間を分離
+		array<String^>^ dt = datetime->Split(delimiter->ToCharArray());
+		// データクラスに値をセット
+		MethaneData^ data = gcnew MethaneData();
+		data->setDateString(dt[0]);
+		data->setTimeString(dt[1]);
+		data->setC0(methane);
+		data->setC(corrected);
+		data->setT(temp);
+		String^ dataFolder = properties->getDataFolder() + "\\";
+		// 日次データファイル名
+		String^ dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".cvs";
+		// 月次データファイル名
+		String^ MonthlyDataFileName = dataFolder + getMonthlyFileNameFromDateTime(now) + ".cvs";
+		if ((trendData->Count == 0) || (!dataFile->existsFile(dailyDataFileName))) {
+			// 日次データファイルがない場合（日付が変わったか、その日最初の起動時）
+			// 過去1週間のデータを読込む
+			trendData = gcnew Generic::List<MethaneData^>();
+			DateTime^ wk = lastWeek;
+			while (wk->CompareTo(now) < 0) {
+				dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(wk) + ".cvs";
+				dataFile->readFile(dailyDataFileName, trendData);
+				wk = wk->AddDays(1);
+			}
+
+		}
+		else {
+			// 先頭のデータを削除
+			if (trendData->Count > 1) {
+				trendData->RemoveAt(0);
+			}
+		}
+		// ファイル追加書き出し（ファイルがない時は新規作成される。）
+		dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".cvs";
+		int rc = dataFile->writeFile(MonthlyDataFileName, data);
+		if (rc < 0) {
+			// Error
+		}
+		rc = dataFile->writeFile(dailyDataFileName, data);
+		if (rc < 0) {
+			// Error
+		}
+
+		// グラフ表示用に当日のデータファイルを読込む
+		todayData = gcnew Generic::List<MethaneData^>();
+		todayData->AddRange(trendData);
+		dataFile->readFile(dailyDataFileName, todayData);
+		// グラフ描画
+		trendChart->drawChart(todayData);
+
+		//this->chart1->Series["温度"]->Points->Add()
+		return data;
+	}
+}
