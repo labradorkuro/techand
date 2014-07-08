@@ -12,7 +12,7 @@ int main() {
 	MainForm ^fm = gcnew MainForm();
 	fm->setMethaneConcentration(0.0f);
 	fm->setTemperature(0.0f);
-	fm->onTimer();
+	//fm->onTimer();
 	fm->ShowDialog();
 	return 0;
 }
@@ -22,21 +22,40 @@ Chart^ MainForm::getChartControl() {
 //System::Void MainForm::readProperties() {
 //}
 void MainForm::setMethaneConcentration(float val) {
-	labelMethane->Text = val.ToString("F1");
+	labelMethane->Text = formatValue(val);// val.ToString("F1");
 	labelMethane->Refresh();
 }
 
 void MainForm::setTemperature(float val) {
-	labelTemp->Text = val.ToString("F1");
+	labelTemp->Text = formatValue(val);// val.ToString("##0.0");
 	labelTemp->Refresh();
 
+}
+void MainForm::setBatRssiLevel(int no, int bat, int rssi) {
+	if (no == 1) {
+		label_temp_level->Text = "電波強度：" + rssi + "  電池残量：" + bat;
+		label_temp_level->Refresh();
+	}
+	else if (no == 2) {
+		label_ammeter_level->Text = "電波強度：" + rssi + "  電池残量：" + bat;
+		label_ammeter_level->Refresh();
+	}
+
+}
+String^ MainForm::formatValue(float val) {
+	String^ f = val.ToString("##0.0");
+	while (f->Length < 5) {
+		f = " " + f;
+	}
+	return f;
 }
 
 void MainForm::onTimer() {
 	MethaneData^ data = mainProc->onTimer();
-	this->setMethaneConcentration(data->getC0());
+	this->setMethaneConcentration(data->getC());
 	this->setTemperature(data->getT());
-
+	this->setBatRssiLevel(1, data->getBattery(1), data->getRssi(1));
+	this->setBatRssiLevel(2, data->getBattery(2), data->getRssi(2));
 }
 //
 // タイマー処理

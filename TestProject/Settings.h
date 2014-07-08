@@ -1,5 +1,7 @@
 #pragma once
 #include "Properties.h"
+#include "SerialPortProc.h"
+
 namespace MethaneGasConcentrationProject {
 
 	using namespace System;
@@ -65,6 +67,11 @@ namespace MethaneGasConcentrationProject {
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::NumericUpDown^  intervalUpDown;
 	private: System::Windows::Forms::ComboBox^  portComboBox;
+	private: System::Windows::Forms::Button^  button1;
+	private: System::IO::Ports::SerialPort^  serialPort1;
+	private: System::Windows::Forms::Panel^  panel9;
+	private: System::Windows::Forms::TextBox^  num;
+	private: System::ComponentModel::IContainer^  components;
 
 
 
@@ -73,7 +80,7 @@ namespace MethaneGasConcentrationProject {
 		/// <summary>
 		/// 必要なデザイナー変数です。
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -82,6 +89,7 @@ namespace MethaneGasConcentrationProject {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->panel5 = (gcnew System::Windows::Forms::Panel());
 			this->panel6 = (gcnew System::Windows::Forms::Panel());
 			this->button3 = (gcnew System::Windows::Forms::Button());
@@ -104,7 +112,11 @@ namespace MethaneGasConcentrationProject {
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->intervalUpDown = (gcnew System::Windows::Forms::NumericUpDown());
 			this->portComboBox = (gcnew System::Windows::Forms::ComboBox());
+			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->panel9 = (gcnew System::Windows::Forms::Panel());
+			this->num = (gcnew System::Windows::Forms::TextBox());
 			this->folderBrowserDialog1 = (gcnew System::Windows::Forms::FolderBrowserDialog());
+			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
 			this->panel5->SuspendLayout();
 			this->panel6->SuspendLayout();
 			this->tableLayoutPanel1->SuspendLayout();
@@ -116,6 +128,7 @@ namespace MethaneGasConcentrationProject {
 			this->flowLayoutPanel1->SuspendLayout();
 			this->panel8->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->intervalUpDown))->BeginInit();
+			this->panel9->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// panel5
@@ -174,6 +187,8 @@ namespace MethaneGasConcentrationProject {
 			this->tableLayoutPanel1->Controls->Add(this->flowLayoutPanel1, 1, 1);
 			this->tableLayoutPanel1->Controls->Add(this->panel8, 1, 2);
 			this->tableLayoutPanel1->Controls->Add(this->portComboBox, 1, 3);
+			this->tableLayoutPanel1->Controls->Add(this->button1, 1, 5);
+			this->tableLayoutPanel1->Controls->Add(this->panel9, 0, 5);
 			this->tableLayoutPanel1->Dock = System::Windows::Forms::DockStyle::Top;
 			this->tableLayoutPanel1->Location = System::Drawing::Point(0, 0);
 			this->tableLayoutPanel1->Name = L"tableLayoutPanel1";
@@ -371,6 +386,41 @@ namespace MethaneGasConcentrationProject {
 			this->portComboBox->TabIndex = 7;
 			this->portComboBox->Text = L"選択してください";
 			// 
+			// button1
+			// 
+			this->button1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->button1->Location = System::Drawing::Point(354, 209);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(332, 38);
+			this->button1->TabIndex = 8;
+			this->button1->Text = L"ユニークIDセット";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &Settings::button1_Click);
+			// 
+			// panel9
+			// 
+			this->panel9->Controls->Add(this->num);
+			this->panel9->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel9->Location = System::Drawing::Point(4, 209);
+			this->panel9->Name = L"panel9";
+			this->panel9->Size = System::Drawing::Size(343, 38);
+			this->panel9->TabIndex = 9;
+			// 
+			// num
+			// 
+			this->num->Location = System::Drawing::Point(88, 9);
+			this->num->Name = L"num";
+			this->num->Size = System::Drawing::Size(186, 22);
+			this->num->TabIndex = 0;
+			this->num->Text = L"1";
+			this->num->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			// 
+			// serialPort1
+			// 
+			this->serialPort1->BaudRate = 38400;
+			this->serialPort1->PortName = L"COM3";
+			// 
 			// Settings
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
@@ -399,6 +449,8 @@ namespace MethaneGasConcentrationProject {
 			this->panel8->ResumeLayout(false);
 			this->panel8->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->intervalUpDown))->EndInit();
+			this->panel9->ResumeLayout(false);
+			this->panel9->PerformLayout();
 			this->ResumeLayout(false);
 
 		}
@@ -435,6 +487,20 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 			 properties->setPortNo(this->portComboBox->SelectedItem->ToString());
 			 properties->writeFile();
 			 this->Close();
+}
+private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+			 SerialPortProc^ sp = gcnew SerialPortProc(this->serialPort1);
+			 unsigned char n = this->num->Text->ToCharArray()[0];
+			 if (sp->openPort(properties->getPortNo())) {
+				 if (sp->setUID(n)) {
+					 MessageBox::Show("設定されました", "動作設定", MessageBoxButtons::OK);
+				 }
+				 else {
+					 MessageBox::Show("設定できませんでした", "動作設定", MessageBoxButtons::OK);
+				 }
+				 sp->closePort();
+			 }
+			 
 }
 };
 }

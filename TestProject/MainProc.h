@@ -6,7 +6,7 @@ author:Takenori Tanaka(niigata-sl.com)
 #include "Properties.h"
 #include "DataFile.h"
 #include "MethaneChart.h"
-
+#include "SerialPortProc.h"
 #pragma once
 
 using namespace System::Collections;
@@ -15,7 +15,7 @@ namespace MethaneGasConcentrationProject {
 	public ref class MainProc
 	{
 	public:
-		MainProc(Chart^ c);
+		MainProc(Chart^ c, SerialPort^ ArgSerialPort);
 		MethaneData^ onTimer();
 		int getInterval();
 		static String^ getDailyFileNameFromDateTime(DateTime^ dt);
@@ -23,6 +23,7 @@ namespace MethaneGasConcentrationProject {
 		Properties^ getProperties();
 		int reloadProperties();
 	private:
+		SerialPortProc^ serialPortProc;
 		Chart^ chart;
 		Properties^ properties;
 		DataFile^ dataFile;

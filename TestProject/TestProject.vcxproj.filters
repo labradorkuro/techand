@@ -45,6 +45,9 @@
     <ClCompile Include="LogForm.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="SerialPortProc.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphForm.h">
@@ -80,6 +83,9 @@
     <ClInclude Include="LogForm.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="SerialPortProc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GraphForm.resx">
@@ -89,6 +95,9 @@
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
+      <Filter>リソース ファイル</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogForm.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
   </ItemGroup>

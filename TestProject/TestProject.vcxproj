@@ -88,6 +88,7 @@
     <ClCompile Include="MethaneChart.cpp" />
     <ClCompile Include="MethaneData.cpp" />
     <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="SerialPortProc.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="MainForm.cpp" />
   </ItemGroup>
@@ -105,6 +106,7 @@
     <ClInclude Include="MethaneData.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SerialPortProc.h" />
     <ClInclude Include="Settings.h">
       <FileType>CppForm</FileType>
     </ClInclude>

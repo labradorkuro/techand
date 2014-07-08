@@ -78,7 +78,7 @@ namespace MethaneGasConcentrationProject {
 			MethaneData^ md = data[i];
 			dtRow = ds->Tables[0]->NewRow();
 			dtRow[0] = md->getDateString() + " " + md->getTimeString();
-			dtRow[1] = md->getC0();
+			dtRow[1] = md->getC();
 			dtRow[2] = md->getT();
 			ds->Tables[0]->Rows->Add(dtRow);
 

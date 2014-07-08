@@ -10,6 +10,8 @@ using namespace System;
 namespace MethaneGasConcentrationProject {
 	MethaneData::MethaneData()
 	{
+		battery = gcnew array<int>(2);
+		rssi = gcnew array<int>(2);
 	}
 	void MethaneData::setDateString(String^ date) {
 		dateString = date;
@@ -41,5 +43,18 @@ namespace MethaneGasConcentrationProject {
 	float MethaneData::getT() {
 		return t;
 	}
+	void MethaneData::setBattery(int no, int val) {
+		battery[no - 1] = val;
+	}
 
+	int MethaneData::getBattery(int no) {
+		return battery[no - 1];
+	}
+	void MethaneData::setRssi(int no, int val) {
+		rssi[no - 1] = val;
+	}
+
+	int MethaneData::getRssi(int no) {
+		return rssi[no - 1];
+	}
 }
