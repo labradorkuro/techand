@@ -53,11 +53,11 @@ namespace MethaneGasConcentrationProject {
 		catch (Exception^ e)
 		{
 			if (dynamic_cast<FileNotFoundException^>(e)) {
-				Console::WriteLine("file '{0}' not found", fileName);
+				//Console::WriteLine("file '{0}' not found", fileName);
 				rc = -1;
 			}
 			else {
-				Console::WriteLine("problem reading file '{0}'", fileName);
+				//Console::WriteLine("problem reading file '{0}'", fileName);
 				rc = -2;
 			}
 		}
@@ -94,7 +94,7 @@ namespace MethaneGasConcentrationProject {
 		catch (Exception^ e)
 		{
 			LogFile::writeFile("データファイルの書込みが出来ませんでした");
-			Console::WriteLine("problem writing file '{0}'", fileName);
+			//Console::WriteLine("problem writing file '{0}'", fileName);
 			rc = -2;
 		}
 		return rc;

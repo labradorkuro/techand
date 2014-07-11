@@ -15,6 +15,12 @@ namespace MethaneGasConcentrationProject {
 		System::String^ portNo = "COM1";
 		System::String^ propertyFileName = "mgc.properties";
 	public:
+		int temp_corrected_value = 20;
+		float concentration_factor = 2.3;
+		float temp_range_upper = 10;
+		float temp_range_lower = -10;
+		float temp_factor = 0.23;
+
 		Properties();
 		int readFile();
 		int writeFile();

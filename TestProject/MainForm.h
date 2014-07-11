@@ -6,7 +6,6 @@ author:Takenori Tanaka(niigata-sl.com)
 
 #pragma once
 #include <Windows.h>
-//#include <TdRTR500CommLib.h>
 #include "GraphForm.h"
 #include "Settings.h"
 #include "Properties.h"
@@ -47,6 +46,7 @@ namespace MethaneGasConcentrationProject {
 		void setMethaneConcentration(float val);
 		void setTemperature(float val);
 		void setBatRssiLevel(int no,int bat, int rssi);
+		void setTimeLabel(String^ time);
 		void onTimer();
 		Chart^ getChartControl();
 	protected:
@@ -55,6 +55,10 @@ namespace MethaneGasConcentrationProject {
 		/// </summary>
 		~MainForm()
 		{
+			this->timer1->Enabled = false;
+			if (serialPort1->IsOpen) {
+				serialPort1->Close();
+			}
 			if (components)
 			{
 				delete components;
@@ -85,7 +89,7 @@ namespace MethaneGasConcentrationProject {
 	private: System::Windows::Forms::ToolStripMenuItem^  表示ToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  TermGraphToolStripMenuItem;
 
-	private: System::Windows::Forms::ToolStripMenuItem^  機器情報ToolStripMenuItem;
+
 	private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator1;
 	private: System::Windows::Forms::ToolStripMenuItem^  終了ToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator2;
@@ -125,6 +129,7 @@ namespace MethaneGasConcentrationProject {
 	private: System::Windows::Forms::Label^  label_ammeter_level;
 
 	private: System::Windows::Forms::Label^  label_temp_level;
+	private: System::Windows::Forms::Label^  labelTime;
 
 	private: System::Windows::Forms::Label^  label4;
 
@@ -148,12 +153,13 @@ namespace MethaneGasConcentrationProject {
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
-			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea3 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-			System::Windows::Forms::DataVisualization::Charting::Legend^  legend3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series5 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::Series^  series6 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
-			System::Windows::Forms::DataVisualization::Charting::Title^  title3 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^  chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^  legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::Series^  series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
+			System::Windows::Forms::DataVisualization::Charting::Title^  title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
 			this->panel2 = (gcnew System::Windows::Forms::Panel());
+			this->labelTime = (gcnew System::Windows::Forms::Label());
 			this->panel6 = (gcnew System::Windows::Forms::Panel());
 			this->label_ammeter_level = (gcnew System::Windows::Forms::Label());
 			this->label_temp_level = (gcnew System::Windows::Forms::Label());
@@ -173,7 +179,6 @@ namespace MethaneGasConcentrationProject {
 			this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->表示ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->TermGraphToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->機器情報ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 			this->button1 = (gcnew System::Windows::Forms::Button());
@@ -199,12 +204,24 @@ namespace MethaneGasConcentrationProject {
 			// 
 			// panel2
 			// 
+			this->panel2->Controls->Add(this->labelTime);
 			this->panel2->Controls->Add(this->panel6);
 			this->panel2->Dock = System::Windows::Forms::DockStyle::Bottom;
 			this->panel2->Location = System::Drawing::Point(0, 70);
 			this->panel2->Name = L"panel2";
 			this->panel2->Size = System::Drawing::Size(1305, 230);
 			this->panel2->TabIndex = 6;
+			// 
+			// labelTime
+			// 
+			this->labelTime->AutoSize = true;
+			this->labelTime->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->labelTime->Location = System::Drawing::Point(58, 19);
+			this->labelTime->Name = L"labelTime";
+			this->labelTime->Size = System::Drawing::Size(118, 24);
+			this->labelTime->TabIndex = 18;
+			this->labelTime->Text = L"計測時間：";
 			// 
 			// panel6
 			// 
@@ -220,9 +237,9 @@ namespace MethaneGasConcentrationProject {
 			this->panel6->Controls->Add(this->labelMethane);
 			this->panel6->Controls->Add(this->label6);
 			this->panel6->Controls->Add(this->label4);
-			this->panel6->Location = System::Drawing::Point(111, 15);
+			this->panel6->Location = System::Drawing::Point(62, 59);
 			this->panel6->Name = L"panel6";
-			this->panel6->Size = System::Drawing::Size(1153, 166);
+			this->panel6->Size = System::Drawing::Size(1153, 165);
 			this->panel6->TabIndex = 8;
 			// 
 			// label_ammeter_level
@@ -388,9 +405,9 @@ namespace MethaneGasConcentrationProject {
 			// 
 			// 表示ToolStripMenuItem
 			// 
-			this->表示ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+			this->表示ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
 				this->TermGraphToolStripMenuItem,
-					this->機器情報ToolStripMenuItem, this->toolStripSeparator2
+					this->toolStripSeparator2
 			});
 			this->表示ToolStripMenuItem->Name = L"表示ToolStripMenuItem";
 			this->表示ToolStripMenuItem->Size = System::Drawing::Size(51, 23);
@@ -399,52 +416,46 @@ namespace MethaneGasConcentrationProject {
 			// TermGraphToolStripMenuItem
 			// 
 			this->TermGraphToolStripMenuItem->Name = L"TermGraphToolStripMenuItem";
-			this->TermGraphToolStripMenuItem->Size = System::Drawing::Size(170, 24);
+			this->TermGraphToolStripMenuItem->Size = System::Drawing::Size(175, 24);
 			this->TermGraphToolStripMenuItem->Text = L"期間グラフ表示";
 			this->TermGraphToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::TermGraphToolStripMenuItem_Click);
-			// 
-			// 機器情報ToolStripMenuItem
-			// 
-			this->機器情報ToolStripMenuItem->Name = L"機器情報ToolStripMenuItem";
-			this->機器情報ToolStripMenuItem->Size = System::Drawing::Size(170, 24);
-			this->機器情報ToolStripMenuItem->Text = L"機器情報";
 			// 
 			// toolStripSeparator2
 			// 
 			this->toolStripSeparator2->Name = L"toolStripSeparator2";
-			this->toolStripSeparator2->Size = System::Drawing::Size(167, 6);
+			this->toolStripSeparator2->Size = System::Drawing::Size(172, 6);
 			// 
 			// chart1
 			// 
 			this->chart1->BackColor = System::Drawing::SystemColors::Control;
-			chartArea3->Name = L"ChartArea1";
-			this->chart1->ChartAreas->Add(chartArea3);
+			chartArea1->Name = L"ChartArea1";
+			this->chart1->ChartAreas->Add(chartArea1);
 			this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
-			legend3->Name = L"Legend1";
-			this->chart1->Legends->Add(legend3);
+			legend1->Name = L"Legend1";
+			this->chart1->Legends->Add(legend1);
 			this->chart1->Location = System::Drawing::Point(0, 0);
 			this->chart1->Name = L"chart1";
-			series5->ChartArea = L"ChartArea1";
-			series5->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series5->Legend = L"Legend1";
-			series5->MarkerBorderWidth = 3;
-			series5->Name = L"ガス濃度";
-			series5->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
-			series6->ChartArea = L"ChartArea1";
-			series6->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
-			series6->Legend = L"Legend1";
-			series6->Name = L"温度";
-			series6->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
-			this->chart1->Series->Add(series5);
-			this->chart1->Series->Add(series6);
+			series1->ChartArea = L"ChartArea1";
+			series1->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series1->Legend = L"Legend1";
+			series1->MarkerBorderWidth = 3;
+			series1->Name = L"ガス濃度";
+			series1->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
+			series2->ChartArea = L"ChartArea1";
+			series2->ChartType = System::Windows::Forms::DataVisualization::Charting::SeriesChartType::Line;
+			series2->Legend = L"Legend1";
+			series2->Name = L"温度";
+			series2->XValueType = System::Windows::Forms::DataVisualization::Charting::ChartValueType::DateTime;
+			this->chart1->Series->Add(series1);
+			this->chart1->Series->Add(series2);
 			this->chart1->Size = System::Drawing::Size(1305, 426);
 			this->chart1->TabIndex = 4;
 			this->chart1->Text = L"chart1";
-			title3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			title1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			title3->Name = L"Title1";
-			title3->Text = L"ガス濃度";
-			this->chart1->Titles->Add(title3);
+			title1->Name = L"Title1";
+			title1->Text = L"ガス濃度";
+			this->chart1->Titles->Add(title1);
 			// 
 			// button1
 			// 
@@ -580,6 +591,7 @@ namespace MethaneGasConcentrationProject {
 			this->Text = L"ガス濃度計測(Version 1.0)";
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->panel2->ResumeLayout(false);
+			this->panel2->PerformLayout();
 			this->panel6->ResumeLayout(false);
 			this->panel6->PerformLayout();
 			this->menuStrip1->ResumeLayout(false);
@@ -644,8 +656,6 @@ private: System::Void buttonStart_Click(System::Object^  sender, System::EventAr
 			 this->timer1->Interval = interval;
 			 this->timer1->Enabled = true;
 			 this->onTimer();
-			 this->buttonStop->Enabled = true;
-			 this->buttonStart->Enabled = false;
 }
 private: System::Void buttonStop_Click(System::Object^  sender, System::EventArgs^  e) {
 			 this->timer1->Enabled = false;

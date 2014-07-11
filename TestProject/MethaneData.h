@@ -16,8 +16,9 @@ namespace MethaneGasConcentrationProject {
 		float t = 0;	// ガス温度
 		array<int>^ battery;	// 電池残量
 		array<int>^ rssi;		// 電波強度
-
 	public:
+		bool status = false;	// 計測結果
+
 		MethaneData();
 		void setDateString(String^ date);
 		String^ getDateString();

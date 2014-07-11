@@ -71,6 +71,7 @@ namespace MethaneGasConcentrationProject {
 	private: System::IO::Ports::SerialPort^  serialPort1;
 	private: System::Windows::Forms::Panel^  panel9;
 	private: System::Windows::Forms::TextBox^  num;
+	private: System::Windows::Forms::Label^  label7;
 	private: System::ComponentModel::IContainer^  components;
 
 
@@ -114,6 +115,7 @@ namespace MethaneGasConcentrationProject {
 			this->portComboBox = (gcnew System::Windows::Forms::ComboBox());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->panel9 = (gcnew System::Windows::Forms::Panel());
+			this->label7 = (gcnew System::Windows::Forms::Label());
 			this->num = (gcnew System::Windows::Forms::TextBox());
 			this->folderBrowserDialog1 = (gcnew System::Windows::Forms::FolderBrowserDialog());
 			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
@@ -137,7 +139,7 @@ namespace MethaneGasConcentrationProject {
 			this->panel5->Controls->Add(this->tableLayoutPanel1);
 			this->panel5->Location = System::Drawing::Point(12, 12);
 			this->panel5->Name = L"panel5";
-			this->panel5->Size = System::Drawing::Size(701, 322);
+			this->panel5->Size = System::Drawing::Size(701, 386);
 			this->panel5->TabIndex = 1;
 			// 
 			// panel6
@@ -145,7 +147,7 @@ namespace MethaneGasConcentrationProject {
 			this->panel6->Controls->Add(this->button3);
 			this->panel6->Controls->Add(this->button2);
 			this->panel6->Dock = System::Windows::Forms::DockStyle::Bottom;
-			this->panel6->Location = System::Drawing::Point(0, 264);
+			this->panel6->Location = System::Drawing::Point(0, 328);
 			this->panel6->Name = L"panel6";
 			this->panel6->Size = System::Drawing::Size(701, 58);
 			this->panel6->TabIndex = 2;
@@ -199,7 +201,9 @@ namespace MethaneGasConcentrationProject {
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
-			this->tableLayoutPanel1->Size = System::Drawing::Size(701, 251);
+			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 20)));
+			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 20)));
+			this->tableLayoutPanel1->Size = System::Drawing::Size(701, 252);
 			this->tableLayoutPanel1->TabIndex = 1;
 			// 
 			// panel1
@@ -379,7 +383,10 @@ namespace MethaneGasConcentrationProject {
 			this->portComboBox->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->portComboBox->FormattingEnabled = true;
-			this->portComboBox->Items->AddRange(gcnew cli::array< System::Object^  >(5) { L"COM1", L"COM2", L"COM3", L"COM4", L"COM5" });
+			this->portComboBox->Items->AddRange(gcnew cli::array< System::Object^  >(9) {
+				L"COM1", L"COM2", L"COM3", L"COM4", L"COM5",
+					L"COM6", L"COM7", L"COM8", L"COM9"
+			});
 			this->portComboBox->Location = System::Drawing::Point(354, 127);
 			this->portComboBox->Name = L"portComboBox";
 			this->portComboBox->Size = System::Drawing::Size(260, 28);
@@ -392,7 +399,7 @@ namespace MethaneGasConcentrationProject {
 				static_cast<System::Byte>(128)));
 			this->button1->Location = System::Drawing::Point(354, 209);
 			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(332, 38);
+			this->button1->Size = System::Drawing::Size(343, 38);
 			this->button1->TabIndex = 8;
 			this->button1->Text = L"ユニークIDセット";
 			this->button1->UseVisualStyleBackColor = true;
@@ -400,18 +407,32 @@ namespace MethaneGasConcentrationProject {
 			// 
 			// panel9
 			// 
+			this->panel9->Controls->Add(this->label7);
 			this->panel9->Controls->Add(this->num);
 			this->panel9->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->panel9->Location = System::Drawing::Point(4, 209);
 			this->panel9->Name = L"panel9";
-			this->panel9->Size = System::Drawing::Size(343, 38);
+			this->panel9->Size = System::Drawing::Size(343, 39);
 			this->panel9->TabIndex = 9;
+			// 
+			// label7
+			// 
+			this->label7->AutoSize = true;
+			this->label7->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->label7->Location = System::Drawing::Point(160, 11);
+			this->label7->Name = L"label7";
+			this->label7->Size = System::Drawing::Size(89, 20);
+			this->label7->TabIndex = 1;
+			this->label7->Text = L"子機番号";
 			// 
 			// num
 			// 
-			this->num->Location = System::Drawing::Point(88, 9);
+			this->num->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->num->Location = System::Drawing::Point(280, 8);
 			this->num->Name = L"num";
-			this->num->Size = System::Drawing::Size(186, 22);
+			this->num->Size = System::Drawing::Size(60, 27);
 			this->num->TabIndex = 0;
 			this->num->Text = L"1";
 			this->num->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
@@ -425,7 +446,7 @@ namespace MethaneGasConcentrationProject {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(731, 349);
+			this->ClientSize = System::Drawing::Size(731, 414);
 			this->Controls->Add(this->panel5);
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;

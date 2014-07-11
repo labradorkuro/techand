@@ -42,6 +42,11 @@ void MainForm::setBatRssiLevel(int no, int bat, int rssi) {
 	}
 
 }
+void MainForm::setTimeLabel(String^ time) {
+	labelTime->Text = "計測時間：" + time;
+	labelTime->Refresh();
+
+}
 String^ MainForm::formatValue(float val) {
 	String^ f = val.ToString("##0.0");
 	while (f->Length < 5) {
@@ -51,57 +56,28 @@ String^ MainForm::formatValue(float val) {
 }
 
 void MainForm::onTimer() {
+	// 計測処理
+	this->timer1->Enabled = false;
 	MethaneData^ data = mainProc->onTimer();
+	// 画面に表示している値の更新
 	this->setMethaneConcentration(data->getC());
 	this->setTemperature(data->getT());
 	this->setBatRssiLevel(1, data->getBattery(1), data->getRssi(1));
 	this->setBatRssiLevel(2, data->getBattery(2), data->getRssi(2));
+	this->setTimeLabel(data->getDateString() + " " + data->getTimeString());
+	if (data->status) {
+		this->buttonStop->Enabled = true;
+		this->buttonStart->Enabled = false;
+		this->timer1->Enabled = true;
+	}
+	else {
+		this->timer1->Enabled = false;
+		this->buttonStart->Enabled = true;
+		this->buttonStop->Enabled = false;
+	}
 }
 //
 // タイマー処理
 System::Void MainForm::timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 	onTimer();
-	/*
-	float methane = 20.05;
-	float temp = 19.9;
-	float corrected = 21.23;
-	// 現在時間取得
-	String^ datetime = Convert::ToString(DateTime::Now);
-	String^ delimiter = " ";
-	String^ delimiter_ymd = "_";
-	// 日付と時間を分離
-	array<String^>^ dt = datetime->Split(delimiter->ToCharArray());
-	this->setMethaneConcentration(methane);
-	this->labelMethane->Refresh();
-	MethaneData^ data = gcnew MethaneData();
-	data->setDateString(dt[0]);
-	data->setTimeString(dt[1]);
-	data->setC0(methane);
-	data->setC(corrected);
-	data->setT(temp);
-
-	// データファイル処理
-	String^ fn = dt[0]->Replace("/", "_");
-	// 年、月、日を分離
-	array<String^>^ ymd = fn->Split(delimiter_ymd->ToCharArray());
-	// 日次データファイル名
-	String^ dataFileName = System::IO::Directory::GetCurrentDirectory() + "\\" + "data\\" + fn + ".cvs";
-	// 月次データファイル名
-	String^ MonthlyDataFileName = System::IO::Directory::GetCurrentDirectory() + "\\" + "data\\" + ymd[0] + "_" + ymd[1] + ".cvs";
-	// ファイル追加書き出し（ファイルがない時は新規作成される。）
-	int rc = dataFile->writeFile(MonthlyDataFileName, data);
-	if (rc < 0) {
-		// Error
-	}
-	rc = dataFile->writeFile(dataFileName, data);
-	if (rc < 0) {
-		// Error
-	}
-
-	trendData = gcnew Generic::List<MethaneData^>();
-	dataFile->readFile(dataFileName, trendData);
-	trendChart->drawChart(trendData);
-
-	//this->chart1->Series["温度"]->Points->Add()
-	*/
 }

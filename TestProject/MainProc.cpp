@@ -1,5 +1,7 @@
 #include "MainProc.h"
+using namespace System;
 using namespace System::Collections;
+using namespace System::Windows::Forms;
 
 namespace MethaneGasConcentrationProject {
 
@@ -76,30 +78,32 @@ namespace MethaneGasConcentrationProject {
 					data->setBattery(1, serialPortProc->getBattery(1));
 					data->setRssi(1, serialPortProc->getRSSI(1));
 					rc1 = true;
-				}
 
-			}
-			// 電流値の取得
-			if (serialPortProc->startTrendData('2')) {
-				if (serialPortProc->readTrendData('2')) {
-					ammeter = serialPortProc->getAmmeter();
-					data->setBattery(2, serialPortProc->getBattery(2));
-					data->setRssi(2, serialPortProc->getRSSI(2));
-					rc2 = true;
+					// 電流値の取得
+					if (serialPortProc->startTrendData('2')) {
+						if (serialPortProc->readTrendData('2')) {
+							ammeter = serialPortProc->getAmmeter();
+							data->setBattery(2, serialPortProc->getBattery(2));
+							data->setRssi(2, serialPortProc->getRSSI(2));
+							rc2 = true;
+						}
+
+					}
 				}
 
 			}
 			serialPortProc->closePort();
 		}
 		if (rc1 && rc2) {
-			float rp = 10;
-			float rn = -10;
+			// メタン濃度温度補正値の計算
+			float rp = properties->temp_range_upper;
+			float rn = properties->temp_range_lower;
 			float d_c = 0;
 			float c0 = 50 * (ammeter - 4) / 8;
-			float d_t = temp - 20;
-			if (d_t < rn) d_c = -2.3;
-			else if (d_t > rp) d_c = 2.3;
-			else d_c = d_t * 0.23;
+			float d_t = temp - properties->temp_corrected_value;
+			if (d_t < rn) d_c = -(properties->concentration_factor);
+			else if (d_t > rp) d_c = properties->concentration_factor;
+			else d_c = d_t * properties->temp_factor;
 			methane = c0 + d_c;
 
 			String^ datetime = Convert::ToString(now);
@@ -155,7 +159,10 @@ namespace MethaneGasConcentrationProject {
 			trendChart->drawChart(todayData);
 
 			//this->chart1->Series["温度"]->Points->Add()
-
+			data->status = true;
+		}
+		else {
+			data->status = false;
 		}
 		return data;
 
