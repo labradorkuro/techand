@@ -119,6 +119,7 @@ namespace MethaneGasConcentrationProject {
 		}
 		return rc;
 	}
+	// 計測開始コマンド
 	bool SerialPortProc::startTrendData(UCHAR no)
 	{
 		bool rtn = false;
@@ -132,95 +133,11 @@ namespace MethaneGasConcentrationProject {
 		int device_no = no - '0';
 		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
 		rtn = sendCommand(buf, &cmd_param[0], sizeof(cmd_param),device_no);
-		/*
-		INT16 cs = 0;
-		for (int i = 0; i < sizeof(cmd_param); i++) {
-			cs += cmd_param[i];
-		}
-		INT16 len = sizeof(cmd_param);
-		BYTE b1 = 0x00ff & cs;
-		BYTE b2 = (0xff00 & cs) >> 8;
-		BYTE b3 = 0x00ff & len;
-		BYTE b4 = (0xff00 & len) >> 8;
-		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
-		buf[0] = 'T';
-		buf[1] = '2';
-		buf[2] = b3;
-		buf[3] = b4;
-		int i = 0;
-		for (i = 0; i < sizeof(cmd_param); i++) {
-			buf[i + 4] = cmd_param[i];
-		}
-		buf[4+ i++] = b1;
-		buf[4 + i] = b2;
-		int error_count = 0;
-		try {
-			serialPort->Write(buf, 0, buf->Length);
-			int rc = 0;
-			while (true) {
-				serialPort->Read(buf, 0, buf->Length);
-				rc = checkStatus(buf);
-				if (rc == 12){
-					rtn = true;
-					break;	// 正常終了
-				}
-				else if (rc == 13) {
-					// 13は通信中
-					Sleep(2000);
-					continue;
-				}
-				else if (rc == -1) {
-					// データ取得
-					break;
-				}
-				else if (rc == -2) {
-					// 不正なデータ受信
-					// コマンドエラー
-					LogFile::writeFile("通信エラーです。接続を確認して下さい[" + device_no + "]");
-					break;
-				}
-				else if (rc == 29) {
-					// コマンド拒否
-					if (error_count < 3) {
-						error_count++;
-						Sleep(5000);
-						continue;
-					}
-					else{
-						LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-						break;
-					}
-				}
-				else if (rc == 17) {
-					// 子機間通信エラー
-					if (error_count < 3) {
-						error_count++;
-						Sleep(5000);
-						continue;
-					}
-					else{
-						LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-						break;
-					}
-				}
-				else {
-					// コマンドエラー
-					LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-					break;
-				}
-			}
-
-		}
-		catch (IO::IOException^ e) {
-			LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。");
-
-		}
-		finally {
-		}
-		*/
 		Sleep(2000);
 		return rtn;
 	}
+
+	// 計測データ取得コマンド
 	bool SerialPortProc::readTrendData(UCHAR no)
 	{
 		BYTE cmd_param[] = { 'E', 'W', 'C', 'U', 'R', ':', 'A', 'C', 'T', '=', 0x01, 0x00, '1'
@@ -233,78 +150,6 @@ namespace MethaneGasConcentrationProject {
 		int device_no = no - '0';
 		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
 		sendCommand(buf, &cmd_param[0], sizeof(cmd_param),device_no);
-		/*
-		INT16 cs = 0;
-		for (int i = 0; i < sizeof(cmd_param); i++) {
-			cs += cmd_param[i];
-		}
-		INT16 len = sizeof(cmd_param);
-		BYTE b1 = 0x00ff & cs;
-		BYTE b2 = (0xff00 & cs) >> 8;
-		BYTE b3 = 0x00ff & len;
-		BYTE b4 = (0xff00 & len) >> 8;
-		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
-		int error_count = 0;
-		try {
-			while (true) {
-				buf[0] = 'T';
-				buf[1] = '2';
-				buf[2] = b3;
-				buf[3] = b4;
-				int i = 0;
-				for (i = 0; i < sizeof(cmd_param); i++) {
-					buf[i + 4] = cmd_param[i];
-				}
-				buf[4 + i++] = b1;
-				buf[4 + i] = b2;
-				int rc = 0;
-				serialPort->Write(buf, 0, buf->Length);
-				serialPort->Read(buf, 0, buf->Length);
-				rc = checkStatus(buf);
-				//Console::WriteLine("loop'{0}'", rc);
-				if (rc == 12) break;	// 正常終了
-				else if (rc == 13) {
-					// 13は通信中
-					Sleep(2000);
-					continue;
-				}
-				else if (rc == -1) {
-					// データ取得
-					break;
-				}
-				else if (rc == -2) {
-					// 不正なデータ受信
-					// コマンドエラー
-					LogFile::writeFile("通信エラーです。接続を確認して下さい[" + device_no + "]");
-					break;
-				}
-				else if (rc == 29) {
-					// コマンド拒否
-					LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-					break;
-				}
-				else if (rc == 17) {
-					// 子機間通信エラー
-					LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-					break;
-				}
-				else {
-					// コマンドエラー
-					LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。" + status_msg[rc][0]);
-					break;
-				}
-				Sleep(2000);
-			}
-
-		}
-		catch (IO::IOException^ e) {
-			LogFile::writeFile("子機[" + device_no + "]からのデータの取得時にエラーが発生しました。");
-			return false;
-		}
-		finally {
-
-		}
-		**/
 		return checkResult(buf, "EWCUR");
 	}
 	
@@ -314,7 +159,6 @@ namespace MethaneGasConcentrationProject {
 		for (int i = 0; i < len; i++) {
 			cs += cmd_param[i];
 		}
-		//INT16 len = sizeof(cmd_param);
 		BYTE b1 = 0x00ff & cs;
 		BYTE b2 = (0xff00 & cs) >> 8;
 		BYTE b3 = 0x00ff & len;
@@ -463,16 +307,16 @@ namespace MethaneGasConcentrationProject {
 						UInt16 amp = ampl + ampu;
 						if (amp == 0xf002) {
 							// 測定値範囲外
-							Console::WriteLine("mAセンサ範囲外（オーバー）'{0}'", amp);
+							//Console::WriteLine("mAセンサ範囲外（オーバー）'{0}'", amp);
 							LogFile::writeFile("mAセンサ範囲外（オーバー） [" + amp + "]");
 						}
 						else if (amp == 0xf001) {
-							Console::WriteLine("mAセンサ範囲外（アンダー）'{0}'", amp);
+							//Console::WriteLine("mAセンサ範囲外（アンダー）'{0}'", amp);
 							LogFile::writeFile("mAセンサ範囲外（アンダー） [" + amp + "]");
 
 						}
 						else if (amp == 0xF00F) {
-							Console::WriteLine("mAセンサセンサ故障、未接続'{0}'", amp);
+							//Console::WriteLine("mAセンサセンサ故障、未接続'{0}'", amp);
 							LogFile::writeFile("mAセンサセンサ故障、未接続 [" + amp + "]");
 
 						}
@@ -569,19 +413,6 @@ namespace MethaneGasConcentrationProject {
 
 	float SerialPortProc::getAmmeter() {
 		return mA;
-	}
-	array<BYTE>^ SerialPortProc::makeCommand(String^ cmdStr)
-	{
-		INT16 cmd_len = 0;
-		INT16 checksum = 0;
-		array<BYTE>^ buf = gcnew array<unsigned char>(8192);
-		array<wchar_t>^ cmd = cmdStr->ToCharArray();
-		for (int i = 0; i < sizeof(cmd); i++) {
-			buf[i] = cmd[i];
-
-		}
-
-		return buf;
 	}
 
 	

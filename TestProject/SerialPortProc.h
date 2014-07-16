@@ -13,7 +13,6 @@ namespace MethaneGasConcentrationProject {
 		float mA = 0;
 		SerialPort^  serialPort;
 		array<array<String^>^>^ status_msg;
-		array<unsigned char>^ makeCommand(String^ cmdStr);
 		bool checkResult(array<unsigned char>^ buf, String^ exeCmd);
 		int checkStatus(array<unsigned char>^ buf);
 		bool SerialPortProc::checkEWCUR_Result(array<unsigned char>^ buf, Int16 len);
