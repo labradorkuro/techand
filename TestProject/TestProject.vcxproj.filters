@@ -102,7 +102,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TestProject.rc">
+    <Image Include="..\MethaneGasConcentrationProject.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MethaneGasConcentrationProject.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
   </ItemGroup>

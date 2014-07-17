@@ -158,6 +158,7 @@ namespace MethaneGasConcentrationProject {
 			System::Windows::Forms::DataVisualization::Charting::Series^  series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			System::Windows::Forms::DataVisualization::Charting::Series^  series2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			System::Windows::Forms::DataVisualization::Charting::Title^  title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MainForm::typeid));
 			this->panel2 = (gcnew System::Windows::Forms::Panel());
 			this->labelTime = (gcnew System::Windows::Forms::Label());
 			this->panel6 = (gcnew System::Windows::Forms::Panel());
@@ -416,14 +417,14 @@ namespace MethaneGasConcentrationProject {
 			// TermGraphToolStripMenuItem
 			// 
 			this->TermGraphToolStripMenuItem->Name = L"TermGraphToolStripMenuItem";
-			this->TermGraphToolStripMenuItem->Size = System::Drawing::Size(175, 24);
+			this->TermGraphToolStripMenuItem->Size = System::Drawing::Size(170, 24);
 			this->TermGraphToolStripMenuItem->Text = L"期間グラフ表示";
 			this->TermGraphToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::TermGraphToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this->toolStripSeparator2->Name = L"toolStripSeparator2";
-			this->toolStripSeparator2->Size = System::Drawing::Size(172, 6);
+			this->toolStripSeparator2->Size = System::Drawing::Size(167, 6);
 			// 
 			// chart1
 			// 
@@ -586,9 +587,11 @@ namespace MethaneGasConcentrationProject {
 			this->ClientSize = System::Drawing::Size(1305, 753);
 			this->Controls->Add(this->panel3);
 			this->Controls->Add(this->menuStrip1);
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
 			this->Text = L"ガス濃度計測(Version 1.0)";
+			this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->panel2->ResumeLayout(false);
 			this->panel2->PerformLayout();

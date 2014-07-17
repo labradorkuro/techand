@@ -14,7 +14,7 @@
     <ProjectGuid>{021616FD-1FC2-4C95-B497-A7622B96274F}</ProjectGuid>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>TestProject</RootNamespace>
+    <RootNamespace>MethaneGasConcentrationProject</RootNamespace>
     <ProjectName>MethaneGasConcentrationProject</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,6 +72,7 @@
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
+    <ResourceCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -131,7 +132,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TestProject.rc" />
+    <ResourceCompile Include="MethaneGasConcentrationProject.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\MethaneGasConcentrationProject.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
