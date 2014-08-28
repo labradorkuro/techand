@@ -10,8 +10,8 @@ namespace MethaneGasConcentrationProject {
 	{
 	public:
 		LogFile();
-		static int writeFile(String^ log);
-	private:
+		static int writeFile(String^ log,bool show);
 		static void showMessage(String^ log);
+	private:
 	};
 }

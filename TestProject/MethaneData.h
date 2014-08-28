@@ -4,6 +4,8 @@
 	author:Takenori Tanaka(niigata-sl.com)
 */
 using namespace System;
+using namespace System::Collections::Generic;
+
 #pragma once
 namespace MethaneGasConcentrationProject {
 	ref class MethaneData
@@ -17,7 +19,8 @@ namespace MethaneGasConcentrationProject {
 		array<int>^ battery;	// 電池残量
 		array<int>^ rssi;		// 電波強度
 	public:
-		bool status = false;	// 計測結果
+		int status = 0;	// 計測結果
+		String^ errorMsg = "";	// エラー時メッセージが入る 
 
 		MethaneData();
 		void setDateString(String^ date);
@@ -34,6 +37,8 @@ namespace MethaneGasConcentrationProject {
 		int getBattery(int no);
 		void setRssi(int no, int val);
 		int getRssi(int no);
+		List<MethaneData^>^ todayData; // 2014.08.13 追加
+
 	};
 	
 }

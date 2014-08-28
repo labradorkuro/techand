@@ -1,5 +1,7 @@
 #pragma once
 #include "MainProc.h"
+#include "LogFile.h"
+
 namespace MethaneGasConcentrationProject {
 
 	using namespace System;
@@ -221,19 +223,31 @@ namespace MethaneGasConcentrationProject {
 		}
 #pragma endregion
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+				 if (DateTime::Compare(startDate->Value, endDate->Value) >= 0) {
+					 LogFile::writeFile("開始日付が終了日付と同じか後の日付になっています。",true);
+					 return;
+				 }
 				 DateTime^ start = startDate->Value;
 				 DateTime^ end = endDate->Value;
 				 // 過去1週間のデータを読込む
 				 dataList = gcnew Generic::List<MethaneData^>();
 				 DataFile^ dataFile = gcnew DataFile();
 				 DateTime^ wk = start;
+				 bool f = false;
 				 while (wk->CompareTo(end) <= 0) {
 					 // 日次データファイル名
-					 String^ dailyDataFileName = dataFolder + "\\" + MainProc::getDailyFileNameFromDateTime(wk) + ".cvs";
-					 dataFile->readFile(dailyDataFileName, dataList);
+					 String^ dailyDataFileName = dataFolder + "\\" + MainProc::getDailyFileNameFromDateTime(wk) + ".csv";
+					 if (dataFile->readFile(dailyDataFileName, dataList) == 0) {
+						 f = true;
+					 }
 					 wk = wk->AddDays(1);
 				 }
-				 trendChart->drawChart(dataList);
+				 if (f) {
+					 trendChart->drawChart(dataList);
+				 }
+				 else {
+					 LogFile::writeFile("表示するデータがありませんでした",true);
+				 }
 
 	}
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {

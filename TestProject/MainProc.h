@@ -22,7 +22,11 @@ namespace MethaneGasConcentrationProject {
 		static String^ getMonthlyFileNameFromDateTime(DateTime^ dt);
 		Properties^ getProperties();
 		int reloadProperties();
+		void setAbortFlag(bool val);
+		void clearErrorCount();
 	private:
+		int errorCount = 0;
+		bool abort = false;
 		SerialPortProc^ serialPortProc;
 		Chart^ chart;
 		Properties^ properties;
@@ -31,5 +35,7 @@ namespace MethaneGasConcentrationProject {
 		List<MethaneData^>^ todayData;
 		List<MethaneData^>^ trendData;
 		System::Void readProperties(Chart^ c);
+		MethaneData^ getData();
+
 	};
 }

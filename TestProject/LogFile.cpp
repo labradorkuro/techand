@@ -9,7 +9,7 @@ namespace MethaneGasConcentrationProject {
 	LogFile::LogFile()
 	{
 	}
-	int LogFile::writeFile(String^ log) {
+	int LogFile::writeFile(String^ log, bool show) {
 		int rc = 0;
 		String^ fileName = System::IO::Directory::GetCurrentDirectory() + "\\log.txt";
 		// 現在時間取得
@@ -27,22 +27,27 @@ namespace MethaneGasConcentrationProject {
 			}
 			finally
 			{
-				if (dout)
+				if (dout) {
+					dout->Close();
 					delete (IDisposable^)dout;
+				}
 			}
 		}
 		catch (Exception^ e)
 		{
-			showMessage(datetime + " ログファイルの書込みが出来ませんでした");
-			Console::WriteLine("problem writing file '{0}'", fileName);
-			rc = -2;
+			showMessage(datetime + " ログファイルの書込みが出来ませんでした[" + log + "]");
+			//Console::WriteLine("problem writing file '{0}'", fileName);
+			rc = -1;
 		}
-		showMessage(str);
+		if (show) {
+			showMessage(str);
+		}
 		return rc;
 
 	}
 	void LogFile::showMessage(String^ log) {
 		LogForm^ lf = gcnew LogForm(log);
-		lf->ShowDialog();
+		lf->Show();
+		//lf->ShowDialog();
 	}
 }

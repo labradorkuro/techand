@@ -18,6 +18,7 @@ namespace MethaneGasConcentrationProject {
 		DataFile();
 		int readFile(String^ fileName, List<MethaneData^>^ datalist);
 		int writeFile(String^ fileName, MethaneData^ data);
+		int createFile(String^ fileName);
 		bool existsFile(String^ fileName);
 	};
 }

@@ -23,7 +23,8 @@ namespace MethaneGasConcentrationProject {
 	using namespace System::Drawing;
 	using namespace System::Runtime::InteropServices;
 	using namespace System::IO::Ports;
-	
+	using namespace System::Threading;
+
 	/// <summary>
 	/// MainForm の概要
 	/// </summary>
@@ -38,6 +39,7 @@ namespace MethaneGasConcentrationProject {
 			//
 			// メタン濃度計測プログラムメイン処理クラス生成
 			mainProc = gcnew MainProc(chart1,serialPort1);
+			enableStartButton(true);
 			// タイマー設定
 			//this->timer1->Interval = mainProc->getInterval();
 			//this->timer1->Enabled = true;
@@ -49,6 +51,10 @@ namespace MethaneGasConcentrationProject {
 		void setTimeLabel(String^ time);
 		void onTimer();
 		Chart^ getChartControl();
+		void displayIt(MethaneData^ data);
+	private: delegate System::Void DisplayItDelegate(MethaneData^ data);
+	private: Thread^ commThread = nullptr;
+	private: bool errorStop = false;
 	protected:
 		/// <summary>
 		/// 使用中のリソースをすべてクリーンアップします。
@@ -135,6 +141,7 @@ namespace MethaneGasConcentrationProject {
 
 
 	private: String^ formatValue(float val);
+	private: void enableStartButton(bool enable);
 	private:  MainProc^ mainProc;
 	private: GraphForm^ gf;
 	private: Settings ^sf;
@@ -275,7 +282,6 @@ namespace MethaneGasConcentrationProject {
 			this->label8->Size = System::Drawing::Size(166, 28);
 			this->label8->TabIndex = 15;
 			this->label8->Text = L"子機2（電流）";
-			this->label8->Click += gcnew System::EventHandler(this, &MainForm::label8_Click);
 			// 
 			// label7
 			// 
@@ -590,7 +596,7 @@ namespace MethaneGasConcentrationProject {
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
-			this->Text = L"ガス濃度計測(Version 1.0)";
+			this->Text = L"ガス濃度計測(Version 1.1)";
 			this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->panel2->ResumeLayout(false);
@@ -653,19 +659,8 @@ private: System::Void showSettingsDialog() {
 			 }
 
 }
-private: System::Void buttonStart_Click(System::Object^  sender, System::EventArgs^  e) {
-			 this->timer1->Enabled = true;
-			 int interval = mainProc->getInterval();
-			 this->timer1->Interval = interval;
-			 this->timer1->Enabled = true;
-			 this->onTimer();
-}
-private: System::Void buttonStop_Click(System::Object^  sender, System::EventArgs^  e) {
-			 this->timer1->Enabled = false;
-			 this->buttonStop->Enabled = false;
-			 this->buttonStart->Enabled = true;
-}
-private: System::Void label8_Click(System::Object^  sender, System::EventArgs^  e) {
-}
+private: System::Void buttonStart_Click(System::Object^  sender, System::EventArgs^  e);
+private: System::Void buttonStop_Click(System::Object^  sender, System::EventArgs^  e);
+
 };
 }

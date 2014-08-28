@@ -1,4 +1,7 @@
+#include <Windows.h>
 #include "MainProc.h"
+#include "LogFile.h"
+
 using namespace System;
 using namespace System::Collections;
 using namespace System::Windows::Forms;
@@ -59,41 +62,94 @@ namespace MethaneGasConcentrationProject {
 
 	// タイマー処理
 	MethaneData^ MainProc::onTimer() {
+		MethaneData^ data = gcnew MethaneData();
+		data->status = -1;
+		if (serialPortProc->openPort(properties->getPortNo())) {
+			int i = 0;
+			// エラーの時は設定カウントまでリトライする
+			for (i = 0; i < properties->getErrorRetry(); i++) {
+				if (abort) {	// エラーリトライタイムアウトチェック
+					data->status = -1;
+					break;
+				}
+				// 計測データ取得
+				data = getData();
+				if (data->status == 0) {
+					// 正常終了
+					break;
+				}
+			}
+			if (data->status == -1) {
+				// エラー確定
+				LogFile::writeFile(serialPortProc->getErrorMsg() + " (retry = " + i + ")", false);
+				errorCount++;
+				if (errorCount >= properties->getRetryLimit()) {
+					data->status = -1;
+				}
+				else {
+					data->status = 1;
+				}
+			}
+			serialPortProc->closePort();
+		}
+		else {
+			data->status = -2;
+			data->errorMsg = serialPortProc->getErrorMsg();
+			LogFile::writeFile(serialPortProc->getErrorMsg() , false);
+		}
+		return data;
+	}
+	// データの取得処理
+	MethaneData^ MainProc::getData() {
+		// serialPortProc->setAmmeter(0x20E0);
 		// 現在時間取得
 		DateTime^ now = DateTime::Now;
 		DateTime^ lastWeek = now->AddDays(-6);	// 1週間前から
 
 		MethaneData^ data = gcnew MethaneData();
+		String^ dataFolder = properties->getDataFolder() + "\\"; // dataフォルダー名
+		// 日次データファイル名
+		String^ dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".csv";
+		// 月次データファイル名
+		String^ MonthlyDataFileName = dataFolder + getMonthlyFileNameFromDateTime(now) + ".csv";
 		// ここでおんどとりからデータを取得する
 		bool rc1 = false;
 		bool rc2 = false;
-		float methane = 0;// now->Minute;
-		float temp = 0;// now->Hour;
+		float methane = 0;
+		float temp = 0;
+#ifdef DEBUG
+		methane = now->Second; // debug
+		temp = now->Minute; // debug
+		rc1 = true; // debug
+		rc2 = true; // debug
+#endif
 		float ammeter = 0;
+#ifndef DEBUG		
 		// 温度値の取得
-		if (serialPortProc->openPort(properties->getPortNo())) {
+		if (!abort) {	// エラーリトライタイムアウトチェック
 			if (serialPortProc->startTrendData('1')) {
 				if (serialPortProc->readTrendData('1')) {
 					temp = serialPortProc->getTemperature();
 					data->setBattery(1, serialPortProc->getBattery(1));
 					data->setRssi(1, serialPortProc->getRSSI(1));
 					rc1 = true;
-
-					// 電流値の取得
-					if (serialPortProc->startTrendData('2')) {
-						if (serialPortProc->readTrendData('2')) {
-							ammeter = serialPortProc->getAmmeter();
-							data->setBattery(2, serialPortProc->getBattery(2));
-							data->setRssi(2, serialPortProc->getRSSI(2));
-							rc2 = true;
-						}
-
-					}
 				}
-
 			}
-			serialPortProc->closePort();
 		}
+		if (!abort) {	// エラーリトライタイムアウトチェック
+			// 電流値の取得
+			if (serialPortProc->startTrendData('2')) {
+				if (serialPortProc->readTrendData('2')) {
+					ammeter = serialPortProc->getAmmeter();
+					data->setBattery(2, serialPortProc->getBattery(2));
+					data->setRssi(2, serialPortProc->getRSSI(2));
+					rc2 = true;
+				}
+			}
+
+		}
+
+#endif
 		if (rc1 && rc2) {
 			// メタン濃度温度補正値の計算
 			float rp = properties->temp_range_upper;
@@ -105,7 +161,6 @@ namespace MethaneGasConcentrationProject {
 			else if (d_t > rp) d_c = properties->concentration_factor;
 			else d_c = d_t * properties->temp_factor;
 			methane = c0 + d_c;
-
 			String^ datetime = Convert::ToString(now);
 			String^ delimiter = " ";
 			String^ delimiter_ymd = "_";
@@ -117,22 +172,17 @@ namespace MethaneGasConcentrationProject {
 			data->setC0(c0);
 			data->setC(methane);
 			data->setT(temp);
-			String^ dataFolder = properties->getDataFolder() + "\\";
-			// 日次データファイル名
-			String^ dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".cvs";
-			// 月次データファイル名
-			String^ MonthlyDataFileName = dataFolder + getMonthlyFileNameFromDateTime(now) + ".cvs";
 			if ((trendData->Count == 0) || (!dataFile->existsFile(dailyDataFileName))) {
 				// 日次データファイルがない場合（日付が変わったか、その日最初の起動時）
 				// 過去1週間のデータを読込む
 				trendData = gcnew Generic::List<MethaneData^>();
 				DateTime^ wk = lastWeek;
 				while (wk->CompareTo(now) < 0) {
-					dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(wk) + ".cvs";
+					dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(wk) + ".csv";
 					dataFile->readFile(dailyDataFileName, trendData);
 					wk = wk->AddDays(1);
 				}
-
+				errorCount = 0;	// エラー発生回数カウントのクリア
 			}
 			else {
 				// 先頭のデータを削除
@@ -141,7 +191,7 @@ namespace MethaneGasConcentrationProject {
 				}
 			}
 			// ファイル追加書き出し（ファイルがない時は新規作成される。）
-			dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".cvs";
+			dailyDataFileName = dataFolder + getDailyFileNameFromDateTime(now) + ".csv";
 			int rc = dataFile->writeFile(MonthlyDataFileName, data);
 			if (rc < 0) {
 				// Error
@@ -156,15 +206,34 @@ namespace MethaneGasConcentrationProject {
 			todayData->AddRange(trendData);
 			dataFile->readFile(dailyDataFileName, todayData);
 			// グラフ描画
-			trendChart->drawChart(todayData);
-
+			//trendChart->drawChart(todayData); // 2014.08.13 MainForm->displayItへ
+			data->todayData = todayData; // 2014.08.13 dataにtodayDataを追加。描画をMainFormへ移すため
 			//this->chart1->Series["温度"]->Points->Add()
-			data->status = true;
+			data->status = 0;
 		}
 		else {
-			data->status = false;
+			// エラー発生
+			if (!dataFile->existsFile(dailyDataFileName)) {
+				dataFile->createFile(dailyDataFileName);
+				errorCount = 0;
+			}
+			data->status = -1;
 		}
+#ifdef DEBUG
+		data->status = 0;
+#endif		
 		return data;
+
+	}
+
+	// リトライ処理中に計測時間になった場合に処理中の処理を終了させるためのフラグをセットする
+	void MainProc::setAbortFlag(bool val)
+	{
+		abort = val;
+		serialPortProc->setAbortFlag(val);
+	}
+	void MainProc::clearErrorCount() {
+		errorCount = 0;
 
 	}
 }

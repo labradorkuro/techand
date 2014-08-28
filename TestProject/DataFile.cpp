@@ -87,13 +87,15 @@ namespace MethaneGasConcentrationProject {
 			}
 			finally
 			{
-				if (dout)
+				if (dout) {
+					dout->Close();
 					delete (IDisposable^)dout;
+				}
 			}
 		}
 		catch (Exception^ e)
 		{
-			LogFile::writeFile("データファイルの書込みが出来ませんでした");
+			LogFile::writeFile("データファイルの書込みが出来ませんでした",true);
 			//Console::WriteLine("problem writing file '{0}'", fileName);
 			rc = -2;
 		}
@@ -101,5 +103,30 @@ namespace MethaneGasConcentrationProject {
 	}
 	bool DataFile::existsFile(String^ fileName) {
 		return File::Exists(fileName);
+	}
+	// ファイル作成
+	int DataFile::createFile(String^ fileName) {
+		int rc = 0;
+		String^ path = fileName;
+		int inx = path->LastIndexOf("\\");
+		path = path->Substring(0, inx);
+		try
+		{
+			if (!Directory::Exists(path)) {
+				Directory::CreateDirectory(path);
+			}
+			StreamWriter^ dout = File::CreateText(fileName);
+			if (dout) {
+				dout->Close();
+				delete (IDisposable^)dout;
+			}
+		}
+		catch (Exception^ e)
+		{
+			LogFile::writeFile("データファイルの作成が出来ませんでした", true);
+			//Console::WriteLine("problem writing file '{0}'", fileName);
+			rc = -2;
+		}
+		return rc;
 	}
 }

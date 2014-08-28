@@ -27,6 +27,8 @@ namespace MethaneGasConcentrationProject {
 			this->intervalUpDown->Value = properties->getInterval() / 1000;
 			this->folderTextBox->Text = properties->getDataFolder();
 			this->portComboBox->SelectedItem = properties->getPortNo();
+			this->errorRetry->Value = properties->getErrorRetry();
+			this->retryLimit->Value = properties->getRetryLimit();
 		}
 
 	protected:
@@ -72,6 +74,15 @@ namespace MethaneGasConcentrationProject {
 	private: System::Windows::Forms::Panel^  panel9;
 	private: System::Windows::Forms::TextBox^  num;
 	private: System::Windows::Forms::Label^  label7;
+	private: System::Windows::Forms::Label^  label9;
+	private: System::Windows::Forms::Panel^  panel10;
+	private: System::Windows::Forms::Label^  label8;
+	private: System::Windows::Forms::Panel^  panel11;
+	private: System::Windows::Forms::Panel^  panel12;
+	private: System::Windows::Forms::Panel^  panel13;
+	private: System::Windows::Forms::NumericUpDown^  errorRetry;
+	private: System::Windows::Forms::Panel^  panel14;
+	private: System::Windows::Forms::NumericUpDown^  retryLimit;
 	private: System::ComponentModel::IContainer^  components;
 
 
@@ -113,10 +124,19 @@ namespace MethaneGasConcentrationProject {
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->intervalUpDown = (gcnew System::Windows::Forms::NumericUpDown());
 			this->portComboBox = (gcnew System::Windows::Forms::ComboBox());
-			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->panel9 = (gcnew System::Windows::Forms::Panel());
-			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->panel10 = (gcnew System::Windows::Forms::Panel());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->panel11 = (gcnew System::Windows::Forms::Panel());
+			this->panel12 = (gcnew System::Windows::Forms::Panel());
 			this->num = (gcnew System::Windows::Forms::TextBox());
+			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->panel13 = (gcnew System::Windows::Forms::Panel());
+			this->errorRetry = (gcnew System::Windows::Forms::NumericUpDown());
+			this->panel14 = (gcnew System::Windows::Forms::Panel());
+			this->retryLimit = (gcnew System::Windows::Forms::NumericUpDown());
 			this->folderBrowserDialog1 = (gcnew System::Windows::Forms::FolderBrowserDialog());
 			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
 			this->panel5->SuspendLayout();
@@ -131,6 +151,12 @@ namespace MethaneGasConcentrationProject {
 			this->panel8->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->intervalUpDown))->BeginInit();
 			this->panel9->SuspendLayout();
+			this->panel10->SuspendLayout();
+			this->panel12->SuspendLayout();
+			this->panel13->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->errorRetry))->BeginInit();
+			this->panel14->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->retryLimit))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// panel5
@@ -139,7 +165,7 @@ namespace MethaneGasConcentrationProject {
 			this->panel5->Controls->Add(this->tableLayoutPanel1);
 			this->panel5->Location = System::Drawing::Point(12, 12);
 			this->panel5->Name = L"panel5";
-			this->panel5->Size = System::Drawing::Size(701, 386);
+			this->panel5->Size = System::Drawing::Size(701, 467);
 			this->panel5->TabIndex = 1;
 			// 
 			// panel6
@@ -147,7 +173,7 @@ namespace MethaneGasConcentrationProject {
 			this->panel6->Controls->Add(this->button3);
 			this->panel6->Controls->Add(this->button2);
 			this->panel6->Dock = System::Windows::Forms::DockStyle::Bottom;
-			this->panel6->Location = System::Drawing::Point(0, 328);
+			this->panel6->Location = System::Drawing::Point(0, 409);
 			this->panel6->Name = L"panel6";
 			this->panel6->Size = System::Drawing::Size(701, 58);
 			this->panel6->TabIndex = 2;
@@ -158,7 +184,7 @@ namespace MethaneGasConcentrationProject {
 			this->button3->Location = System::Drawing::Point(89, 10);
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(210, 38);
-			this->button3->TabIndex = 2;
+			this->button3->TabIndex = 8;
 			this->button3->Text = L"保存";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &Settings::button3_Click);
@@ -168,7 +194,7 @@ namespace MethaneGasConcentrationProject {
 			this->button2->Location = System::Drawing::Point(404, 10);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(210, 38);
-			this->button2->TabIndex = 1;
+			this->button2->TabIndex = 9;
 			this->button2->Text = L"キャンセル";
 			this->button2->UseVisualStyleBackColor = true;
 			this->button2->Click += gcnew System::EventHandler(this, &Settings::button2_Click);
@@ -189,21 +215,26 @@ namespace MethaneGasConcentrationProject {
 			this->tableLayoutPanel1->Controls->Add(this->flowLayoutPanel1, 1, 1);
 			this->tableLayoutPanel1->Controls->Add(this->panel8, 1, 2);
 			this->tableLayoutPanel1->Controls->Add(this->portComboBox, 1, 3);
-			this->tableLayoutPanel1->Controls->Add(this->button1, 1, 5);
 			this->tableLayoutPanel1->Controls->Add(this->panel9, 0, 5);
+			this->tableLayoutPanel1->Controls->Add(this->panel10, 0, 4);
+			this->tableLayoutPanel1->Controls->Add(this->panel11, 0, 6);
+			this->tableLayoutPanel1->Controls->Add(this->panel12, 0, 7);
+			this->tableLayoutPanel1->Controls->Add(this->button1, 1, 7);
+			this->tableLayoutPanel1->Controls->Add(this->panel13, 1, 4);
+			this->tableLayoutPanel1->Controls->Add(this->panel14, 1, 5);
 			this->tableLayoutPanel1->Dock = System::Windows::Forms::DockStyle::Top;
 			this->tableLayoutPanel1->Location = System::Drawing::Point(0, 0);
 			this->tableLayoutPanel1->Name = L"tableLayoutPanel1";
-			this->tableLayoutPanel1->RowCount = 6;
+			this->tableLayoutPanel1->RowCount = 8;
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
 			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
-			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 20)));
-			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 20)));
-			this->tableLayoutPanel1->Size = System::Drawing::Size(701, 252);
+			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
+			this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 40)));
+			this->tableLayoutPanel1->Size = System::Drawing::Size(701, 329);
 			this->tableLayoutPanel1->TabIndex = 1;
 			// 
 			// panel1
@@ -374,7 +405,7 @@ namespace MethaneGasConcentrationProject {
 			this->intervalUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->intervalUpDown->Name = L"intervalUpDown";
 			this->intervalUpDown->Size = System::Drawing::Size(256, 27);
-			this->intervalUpDown->TabIndex = 0;
+			this->intervalUpDown->TabIndex = 2;
 			this->intervalUpDown->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			this->intervalUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
 			// 
@@ -390,52 +421,143 @@ namespace MethaneGasConcentrationProject {
 			this->portComboBox->Location = System::Drawing::Point(354, 127);
 			this->portComboBox->Name = L"portComboBox";
 			this->portComboBox->Size = System::Drawing::Size(260, 28);
-			this->portComboBox->TabIndex = 7;
+			this->portComboBox->TabIndex = 3;
 			this->portComboBox->Text = L"選択してください";
-			// 
-			// button1
-			// 
-			this->button1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->button1->Location = System::Drawing::Point(354, 209);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(343, 38);
-			this->button1->TabIndex = 8;
-			this->button1->Text = L"ユニークIDセット";
-			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &Settings::button1_Click);
 			// 
 			// panel9
 			// 
-			this->panel9->Controls->Add(this->label7);
-			this->panel9->Controls->Add(this->num);
+			this->panel9->Controls->Add(this->label9);
 			this->panel9->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->panel9->Location = System::Drawing::Point(4, 209);
 			this->panel9->Name = L"panel9";
-			this->panel9->Size = System::Drawing::Size(343, 39);
+			this->panel9->Size = System::Drawing::Size(343, 34);
 			this->panel9->TabIndex = 9;
 			// 
-			// label7
+			// label9
 			// 
-			this->label7->AutoSize = true;
-			this->label7->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label9->AutoSize = true;
+			this->label9->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
-			this->label7->Location = System::Drawing::Point(160, 11);
-			this->label7->Name = L"label7";
-			this->label7->Size = System::Drawing::Size(89, 20);
-			this->label7->TabIndex = 1;
-			this->label7->Text = L"子機番号";
+			this->label9->Location = System::Drawing::Point(24, 9);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(174, 20);
+			this->label9->TabIndex = 5;
+			this->label9->Text = L"エラー確定回数制限";
+			// 
+			// panel10
+			// 
+			this->panel10->Controls->Add(this->label8);
+			this->panel10->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel10->Location = System::Drawing::Point(4, 168);
+			this->panel10->Name = L"panel10";
+			this->panel10->Size = System::Drawing::Size(343, 34);
+			this->panel10->TabIndex = 10;
+			// 
+			// label8
+			// 
+			this->label8->AutoSize = true;
+			this->label8->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->label8->Location = System::Drawing::Point(24, 9);
+			this->label8->Name = L"label8";
+			this->label8->Size = System::Drawing::Size(148, 20);
+			this->label8->TabIndex = 4;
+			this->label8->Text = L"エラーリトライ回数";
+			// 
+			// panel11
+			// 
+			this->panel11->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel11->Location = System::Drawing::Point(4, 250);
+			this->panel11->Name = L"panel11";
+			this->panel11->Size = System::Drawing::Size(343, 34);
+			this->panel11->TabIndex = 11;
+			// 
+			// panel12
+			// 
+			this->panel12->Controls->Add(this->num);
+			this->panel12->Controls->Add(this->label7);
+			this->panel12->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel12->Location = System::Drawing::Point(4, 291);
+			this->panel12->Name = L"panel12";
+			this->panel12->Size = System::Drawing::Size(343, 34);
+			this->panel12->TabIndex = 12;
 			// 
 			// num
 			// 
 			this->num->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
-			this->num->Location = System::Drawing::Point(280, 8);
+			this->num->Location = System::Drawing::Point(254, 4);
 			this->num->Name = L"num";
 			this->num->Size = System::Drawing::Size(60, 27);
-			this->num->TabIndex = 0;
+			this->num->TabIndex = 6;
 			this->num->Text = L"1";
 			this->num->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			// 
+			// label7
+			// 
+			this->label7->Anchor = System::Windows::Forms::AnchorStyles::Left;
+			this->label7->AutoSize = true;
+			this->label7->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->label7->Location = System::Drawing::Point(126, 7);
+			this->label7->Name = L"label7";
+			this->label7->Size = System::Drawing::Size(89, 20);
+			this->label7->TabIndex = 1;
+			this->label7->Text = L"子機番号";
+			// 
+			// button1
+			// 
+			this->button1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->button1->Location = System::Drawing::Point(354, 291);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(343, 34);
+			this->button1->TabIndex = 7;
+			this->button1->Text = L"ユニークIDセット";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &Settings::button1_Click);
+			// 
+			// panel13
+			// 
+			this->panel13->Controls->Add(this->errorRetry);
+			this->panel13->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel13->Location = System::Drawing::Point(354, 168);
+			this->panel13->Name = L"panel13";
+			this->panel13->Size = System::Drawing::Size(343, 34);
+			this->panel13->TabIndex = 13;
+			// 
+			// errorRetry
+			// 
+			this->errorRetry->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->errorRetry->Location = System::Drawing::Point(3, 7);
+			this->errorRetry->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 200, 0, 0, 0 });
+			this->errorRetry->Name = L"errorRetry";
+			this->errorRetry->Size = System::Drawing::Size(120, 27);
+			this->errorRetry->TabIndex = 4;
+			this->errorRetry->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			this->errorRetry->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 50, 0, 0, 0 });
+			// 
+			// panel14
+			// 
+			this->panel14->Controls->Add(this->retryLimit);
+			this->panel14->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel14->Location = System::Drawing::Point(354, 209);
+			this->panel14->Name = L"panel14";
+			this->panel14->Size = System::Drawing::Size(343, 34);
+			this->panel14->TabIndex = 14;
+			// 
+			// retryLimit
+			// 
+			this->retryLimit->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->retryLimit->Location = System::Drawing::Point(3, 7);
+			this->retryLimit->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 300, 0, 0, 0 });
+			this->retryLimit->Name = L"retryLimit";
+			this->retryLimit->Size = System::Drawing::Size(120, 27);
+			this->retryLimit->TabIndex = 5;
+			this->retryLimit->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
+			this->retryLimit->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 144, 0, 0, 0 });
 			// 
 			// serialPort1
 			// 
@@ -446,7 +568,7 @@ namespace MethaneGasConcentrationProject {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(731, 414);
+			this->ClientSize = System::Drawing::Size(731, 486);
 			this->Controls->Add(this->panel5);
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
@@ -472,6 +594,14 @@ namespace MethaneGasConcentrationProject {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->intervalUpDown))->EndInit();
 			this->panel9->ResumeLayout(false);
 			this->panel9->PerformLayout();
+			this->panel10->ResumeLayout(false);
+			this->panel10->PerformLayout();
+			this->panel12->ResumeLayout(false);
+			this->panel12->PerformLayout();
+			this->panel13->ResumeLayout(false);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->errorRetry))->EndInit();
+			this->panel14->ResumeLayout(false);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->retryLimit))->EndInit();
 			this->ResumeLayout(false);
 
 		}
@@ -482,6 +612,12 @@ namespace MethaneGasConcentrationProject {
 					 dirty = true;
 				 }
 				 if (properties->getInterval() != this->intervalUpDown->Value * 1000) {
+					 dirty = true;
+				 }
+				 if (properties->getErrorRetry() != this->errorRetry->Value) {
+					 dirty = true;
+				 }
+				 if (properties->getRetryLimit() != this->retryLimit->Value) {
 					 dirty = true;
 				 }
 				 if (String::Compare(properties->getPortNo(), this->portComboBox->SelectedItem->ToString())) {
@@ -506,6 +642,8 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 			 properties->setDataFolder(this->folderTextBox->Text);
 			 properties->setInterval((int)(this->intervalUpDown->Value * 1000));
 			 properties->setPortNo(this->portComboBox->SelectedItem->ToString());
+			 properties->setErrorRetry((int)(this->errorRetry->Value));
+			 properties->setRetryLimit((int)(this->retryLimit->Value));
 			 properties->writeFile();
 			 this->Close();
 }
@@ -523,5 +661,6 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 			 }
 			 
 }
+
 };
 }

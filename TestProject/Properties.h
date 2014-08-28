@@ -14,6 +14,8 @@ namespace MethaneGasConcentrationProject {
 		System::String^ dataFolder = "data";
 		System::String^ portNo = "COM1";
 		System::String^ propertyFileName = "mgc.properties";
+		int errorRetry = 50;			// 通信エラー時のリトライ回数
+		int retryLimit = 144;	// 1日のエラー回数制限
 	public:
 		int temp_corrected_value = 20;
 		float concentration_factor = 2.3;
@@ -30,5 +32,9 @@ namespace MethaneGasConcentrationProject {
 		System::String^ getDataFolder();
 		void setPortNo(System::String^ port);
 		System::String^ getPortNo();
+		void setErrorRetry(int val);
+		int getErrorRetry();
+		void setRetryLimit(int val);
+		int getRetryLimit();
 	};
 }

@@ -33,6 +33,7 @@ namespace MethaneGasConcentrationProject {
 		{
 			StreamReader^ din = File::OpenText(fileName);
 			try {
+				int number;
 
 				String^ str;
 				String^ delimStr = ",";
@@ -46,7 +47,6 @@ namespace MethaneGasConcentrationProject {
 						array<String^>^ prop = properties[i]->Split(delimiterProp);
 						if (prop->Length >= 2) {
 							if (String::Compare(prop[0], "Interval") == 0) {
-								int number;
 								bool result = Int32::TryParse(prop[1], number);
 								if (result) {
 									setInterval(number);
@@ -64,6 +64,24 @@ namespace MethaneGasConcentrationProject {
 							}
 							else if (String::Compare(prop[0], "Port") == 0){
 								setPortNo(prop[1]);
+							}
+							else if (String::Compare(prop[0], "ErrorRetry") == 0){
+								bool result = Int32::TryParse(prop[1], number);
+								if (result) {
+									setErrorRetry(number);
+								}
+								else {
+									setErrorRetry(3);
+								}
+							}
+							else if (String::Compare(prop[0], "RetryLimit") == 0){
+								bool result = Int32::TryParse(prop[1], number);
+								if (result) {
+									setRetryLimit(number);
+								}
+								else {
+									setRetryLimit(3);
+								}
 							}
 						}
 					}
@@ -93,7 +111,8 @@ namespace MethaneGasConcentrationProject {
 		String^ fileName = System::IO::Directory::GetCurrentDirectory() + "\\" + propertyFileName;
 		try
 		{
-			String^ line = "Interval:" + getInterval() + ",DataFolder:" + getDataFolder() + ",Port:" + getPortNo();
+			String^ line = "Interval:" + getInterval() + ",DataFolder:" + getDataFolder() + ",Port:" + getPortNo()
+				+ ",ErrorRetry:" + getErrorRetry() + ",RetryLimit:" + getRetryLimit();
 			try {
 				File::WriteAllText(fileName, line);
 			}
@@ -126,6 +145,18 @@ namespace MethaneGasConcentrationProject {
 	}
 	System::String^ Properties::getPortNo() {
 		return portNo;
+	}
+	void Properties::setErrorRetry(int val) {
+		errorRetry = val;
+	}
+	int Properties::getErrorRetry() {
+		return errorRetry;
+	}
+	void Properties::setRetryLimit(int val) {
+		retryLimit = val;
+	}
+	int Properties::getRetryLimit() {
+		return retryLimit;
 	}
 
 }
