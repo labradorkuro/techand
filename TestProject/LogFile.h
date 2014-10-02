@@ -10,7 +10,10 @@ namespace MethaneGasConcentrationProject {
 	{
 	public:
 		LogFile();
-		static int writeFile(String^ log,bool show);
+		static int writeFile(String^ log, bool show);
+#ifdef LOG
+		static int writeFile2(String^ log, bool show);
+#endif
 		static void showMessage(String^ log);
 	private:
 	};

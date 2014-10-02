@@ -596,7 +596,7 @@ namespace MethaneGasConcentrationProject {
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
-			this->Text = L"ƒKƒX”Z“xŒv‘ª(Version 1.1)";
+			this->Text = L"ƒKƒX”Z“xŒv‘ª(Version 1.1 Build 2014.10.02)";
 			this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->panel2->ResumeLayout(false);

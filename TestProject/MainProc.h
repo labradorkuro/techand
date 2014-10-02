@@ -36,6 +36,8 @@ namespace MethaneGasConcentrationProject {
 		List<MethaneData^>^ trendData;
 		System::Void readProperties(Chart^ c);
 		MethaneData^ getData();
-
+#ifdef LOG
+		void getProcessLog();
+#endif
 	};
 }

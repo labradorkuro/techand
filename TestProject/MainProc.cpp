@@ -5,6 +5,7 @@
 using namespace System;
 using namespace System::Collections;
 using namespace System::Windows::Forms;
+using namespace System::Diagnostics;
 
 namespace MethaneGasConcentrationProject {
 
@@ -62,6 +63,9 @@ namespace MethaneGasConcentrationProject {
 
 	// タイマー処理
 	MethaneData^ MainProc::onTimer() {
+#ifdef LOG
+		getProcessLog();
+#endif
 		MethaneData^ data = gcnew MethaneData();
 		data->status = -1;
 		if (serialPortProc->openPort(properties->getPortNo())) {
@@ -81,7 +85,8 @@ namespace MethaneGasConcentrationProject {
 			}
 			if (data->status == -1) {
 				// エラー確定
-				LogFile::writeFile(serialPortProc->getErrorMsg() + " (retry = " + i + ")", false);
+				data->errorMsg = serialPortProc->getErrorMsg();
+//				LogFile::writeFile(serialPortProc->getErrorMsg() + " (retry = " + i + ")", false);
 				errorCount++;
 				if (errorCount >= properties->getRetryLimit()) {
 					data->status = -1;
@@ -95,7 +100,7 @@ namespace MethaneGasConcentrationProject {
 		else {
 			data->status = -2;
 			data->errorMsg = serialPortProc->getErrorMsg();
-			LogFile::writeFile(serialPortProc->getErrorMsg() , false);
+			//LogFile::writeFile(serialPortProc->getErrorMsg() , false);
 		}
 		return data;
 	}
@@ -234,6 +239,19 @@ namespace MethaneGasConcentrationProject {
 	}
 	void MainProc::clearErrorCount() {
 		errorCount = 0;
+	
+	}
+#ifdef LOG
+	void MainProc::getProcessLog()
+	{
+		// 自プロセスを取得
+		Process^ currentProcess = Process::GetCurrentProcess();
+		// リフレッシュしないとプロセスの各種情報が最新情報に更新されない
+		currentProcess->Refresh();
+		LogFile::writeFile2("物理メモリ使用量:" + currentProcess->WorkingSet64, false);
+		LogFile::writeFile2("仮想メモリ使用量:" + currentProcess->VirtualMemorySize64, false);
 
 	}
+
+#endif
 }

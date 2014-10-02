@@ -59,12 +59,16 @@ void MainForm::onTimer() {
 	// 計測処理
 	//this->timer1->Enabled = false;
 	//enableStartButton(false);
-	LogFile::writeFile("計測開始", false);
+#ifdef LOG
+	LogFile::writeFile2("計測開始", false);
+#endif
 	int error_count = 0;
 	MethaneData^ data = mainProc->onTimer();
 	// 画面に表示している値の更新
 	BeginInvoke(gcnew DisplayItDelegate(this, &MainForm::displayIt), data);
-	LogFile::writeFile("計測終了", false);
+#ifdef LOG
+	LogFile::writeFile2("計測終了", false);
+#endif
 }
 
 // スレッド処理内から画面を更新する
@@ -77,8 +81,14 @@ void MainForm::displayIt(MethaneData^ data) {
 		this->setTimeLabel(data->getDateString() + " " + data->getTimeString());
 		// グラフ描画
 		if (data->todayData) {
+#ifdef LOG
+			LogFile::writeFile2("グラフ描画開始", false);
+#endif
 			MethaneChart^ trendChart = gcnew MethaneChart(chart1);
 			trendChart->drawChart(data->todayData);
+#ifdef LOG
+			LogFile::writeFile2("グラフ描画終了", false);
+#endif
 		}
 	}
 	else if (data->status == -1) {
@@ -140,6 +150,9 @@ void MainForm::enableStartButton(bool enable) {
 
 // 計測開始ボタンイベント
 System::Void MainForm::buttonStart_Click(System::Object^  sender, System::EventArgs^  e) {
+#ifdef LOG
+	LogFile::writeFile2("計測開始ボタン押下", false);
+#endif
 	errorStop = false;	// エラーリトライ回数制限で停止した際にtrueになる
 	mainProc->setAbortFlag(false);
 	mainProc->clearErrorCount();
@@ -151,6 +164,9 @@ System::Void MainForm::buttonStart_Click(System::Object^  sender, System::EventA
 }
 // 計測停止ボタンイベント
 System::Void MainForm::buttonStop_Click(System::Object^  sender, System::EventArgs^  e) {
+#ifdef LOG
+	LogFile::writeFile2("計測停止ボタン押下", false);
+#endif
 	this->timer1->Enabled = false;
 	this->buttonStop->Enabled = false;
 	this->buttonStart->Enabled = true;
