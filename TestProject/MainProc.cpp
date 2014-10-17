@@ -128,9 +128,14 @@ namespace MethaneGasConcentrationProject {
 		rc1 = true; // debug
 		rc2 = true; // debug
 #endif
+#ifdef DEBUG2
+		temp = now->Minute; // debug
+		rc1 = true; // debug
+#endif
 		float ammeter = 0;
 #ifndef DEBUG		
 		// 温度値の取得
+#ifndef DEBUG2		
 		if (!abort) {	// エラーリトライタイムアウトチェック
 			if (serialPortProc->startTrendData('1')) {
 				if (serialPortProc->readTrendData('1')) {
@@ -141,6 +146,7 @@ namespace MethaneGasConcentrationProject {
 				}
 			}
 		}
+#endif
 		if (!abort) {	// エラーリトライタイムアウトチェック
 			// 電流値の取得
 			if (serialPortProc->startTrendData('2')) {
@@ -153,7 +159,6 @@ namespace MethaneGasConcentrationProject {
 			}
 
 		}
-
 #endif
 		if (rc1 && rc2) {
 			// メタン濃度温度補正値の計算

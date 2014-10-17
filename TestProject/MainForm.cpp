@@ -82,12 +82,12 @@ void MainForm::displayIt(MethaneData^ data) {
 		// グラフ描画
 		if (data->todayData) {
 #ifdef LOG
-			LogFile::writeFile2("グラフ描画開始", false);
+//			LogFile::writeFile2("グラフ描画開始", false);
 #endif
 			MethaneChart^ trendChart = gcnew MethaneChart(chart1);
 			trendChart->drawChart(data->todayData);
 #ifdef LOG
-			LogFile::writeFile2("グラフ描画終了", false);
+//			LogFile::writeFile2("グラフ描画終了", false);
 #endif
 		}
 	}
