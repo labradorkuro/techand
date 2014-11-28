@@ -52,6 +52,8 @@ namespace MethaneGasConcentrationProject {
 			if (!serialPort->IsOpen) {
 				serialPort->PortName = port;
 				serialPort->Open();
+				serialPort->ReadTimeout = 1000;
+				serialPort->WriteTimeout = 1000;
 			}
 		}
 		catch (System::Exception^ e){
@@ -120,49 +122,127 @@ namespace MethaneGasConcentrationProject {
 		}
 		return rc;
 	}
+	// 中継機にユニークIDを設定するコマンドを発行（EIREG)
+	bool SerialPortProc::setRelayUID(UCHAR num)
+	{
+		bool rc = false;
+		BYTE cmd_param[] = { 'W', 'R', 'U', 'S', 'T', ':',
+			'I', 'D', '=', 0x08, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+			'N', 'U', 'M', '=', 0x01, 0x00, num,
+			'C', 'H', '=', 0x01, 0x00, '0',
+		};
+		INT16 cs = 0;
+		for (int i = 0; i < sizeof(cmd_param); i++) {
+			cs += cmd_param[i];
+		}
+		INT16 len = sizeof(cmd_param);
+		BYTE b1 = 0x00ff & cs;
+		BYTE b2 = (0xff00 & cs) >> 8;
+		BYTE b3 = 0x00ff & len;
+		BYTE b4 = (0xff00 & len) >> 8;
+		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
+		buf[0] = 'T';
+		buf[1] = '2';
+		buf[2] = b3;
+		buf[3] = b4;
+		int i = 0;
+		for (i = 0; i < sizeof(cmd_param); i++) {
+			buf[i + 4] = cmd_param[i];
+		}
+		buf[4 + i++] = b1;
+		buf[4 + i] = b2;
+		try {
+			serialPort->Write(buf, 0, buf->Length);
+			serialPort->Read(buf, 0, buf->Length);
+		}
+		catch (IO::IOException^ e) {
+			LogFile::writeFile("中継機の設定時にエラーが発生しました。", true);
+
+		}
+		if (checkStatus(buf) == 6) {
+			// OK
+			rc = true;
+		}
+		else {
+			LogFile::writeFile("中継機の設定時にエラーが発生しました。" + status_msg[rc][0], true);
+
+		}
+		return rc;
+	}
 	// 計測開始コマンド
-	bool SerialPortProc::startTrendData(UCHAR no)
+	bool SerialPortProc::startTrendData(UCHAR no, UCHAR relay_no)
 	{
 		bool rtn = false;
-		BYTE cmd_param[] = { 'E','W','C','U','R',':', 'A', 'C', 'T', '=', 0x01, 0x00, '0',
+		array<unsigned char>^ cmd_param0 = { 'E', 'W', 'C', 'U', 'R', ':', 'A', 'C', 'T', '=', 0x01, 0x00, '0',
 			'C', 'H', '=', 0x01, 0x00, '0',
 			'I', 'D', '=', 0x08, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
 			'N', 'U', 'M', '=', 0x01, 0x00, no,
 			'R', 'O', 'U', 'T', 'E', '=', 0x01, 0x00, '0',
-			'F', 'O', 'R', 'M', 'A', 'T', '=',0x01,0x00,'5'
-		};//'R', 'E', 'L', 'A', 'Y', '=', 0x01, 0x00, 0x00,
+			'F', 'O', 'R', 'M', 'A', 'T', '=', 0x01, 0x00, '5' };
+		array<unsigned char>^ cmd_param = setRelayInfo(relay_no, cmd_param0);
+
 		int device_no = no - '0';
 		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
 		errorMsg = "";
-		rtn = sendCommand(buf, &cmd_param[0], sizeof(cmd_param), device_no);
+		rtn = sendCommand(buf, cmd_param, cmd_param->Length, device_no);
 		//Sleep(2000);
 		return rtn;
 	}
 
 	// 計測データ取得コマンド
-	bool SerialPortProc::readTrendData(UCHAR no)
+	bool SerialPortProc::readTrendData(UCHAR no, UCHAR relay_no)
 	{
 		bool rtn = false;
-		BYTE cmd_param[] = { 'E', 'W', 'C', 'U', 'R', ':', 'A', 'C', 'T', '=', 0x01, 0x00, '1'
-			,'C', 'H', '=', 0x01, 0x00, '0',
-			'I', 'D', '=', 0x08, 0x00, 0, 0, 0, 0, 0, 0, 0,0,
-			'N','U','M','=', 0x01, 0x00, no,
+		array<unsigned char>^ cmd_param0 = { 'E', 'W', 'C', 'U', 'R', ':', 'A', 'C', 'T', '=', 0x01, 0x00, '1'
+			, 'C', 'H', '=', 0x01, 0x00, '0',
+			'I', 'D', '=', 0x08, 0x00, 0, 0, 0, 0, 0, 0, 0, 0,
+			'N', 'U', 'M', '=', 0x01, 0x00, no,
 			'R', 'O', 'U', 'T', 'E', '=', 0x01, 0x00, '0',
-			'F', 'O', 'R', 'M', 'A', 'T', '=', 0x01, 0x00, '5'
-		};
+			'F', 'O', 'R', 'M', 'A', 'T', '=', 0x01, 0x00, '5' };
+		array<unsigned char>^ cmd_param = setRelayInfo(relay_no, cmd_param0);
+
 		int device_no = no - '0';
 		array<unsigned char>^ buf = gcnew array<unsigned char>(8192);
 		int error_count = 0;
 		errorMsg = "";
-		if (sendCommand(buf, &cmd_param[0], sizeof(cmd_param), device_no)) {
+		if (sendCommand(buf, cmd_param, cmd_param->Length, device_no)) {
 			// データ取得チェック
 			rtn = checkResult(buf, "EWCUR");
 		}
 		return rtn;
 	}
-	
+	array<byte>^ SerialPortProc::setRelayInfo(unsigned char relay_no, array<unsigned char>^ cmd_param) {
+		BYTE relay0[] = { 'R', 'E', 'L', 'A', 'Y', '=', 0x01, 0x00, 0x00 };
+		BYTE relay1[] = { 'R', 'E', 'L', 'A', 'Y', '=', 0x02, 0x00, 0x00, relay_no };
+		int cmd_len = cmd_param->Length;
+		if (relay_no == 0) {
+			// 中継機なし
+			cmd_len += sizeof(relay0);
+		}
+		else {
+			// 中継機あり
+			cmd_len += sizeof(relay1);
+		}
+		array<BYTE>^ result = gcnew array<unsigned char>(cmd_len);
+		for (int i = 0; i < cmd_param->Length; i++) {
+			result[i] = cmd_param[i];
+		}
+		if (relay_no == 0) {
+			// 中継機なし
+			for (int i = 0; i < sizeof(relay0); i++) {
+				result[cmd_param->Length + i] = relay0[i];
+			}
+		}
+		else {
+			// 中継機あり
+			for (int i = 0; i < sizeof(relay1); i++) {
+				result[cmd_param->Length + i] = relay1[i];
+			}
+		}
+		return result;
+	}
 	// コマンド送信
-	bool SerialPortProc::sendCommand(array<byte>^ buf,BYTE *cmd_param,Int16 len ,int device_no) {
+	bool SerialPortProc::sendCommand(array<byte>^ buf, array<byte>^ cmd_param, Int16 len, int device_no) {
 		bool rtn = false;
 		INT16 cs = 0;
 		for (int i = 0; i < len; i++) {
@@ -197,7 +277,7 @@ namespace MethaneGasConcentrationProject {
 				else if (rc == 13) {
 					// 13は通信中
 					read_retry++;
-					if (read_retry >= 3) {
+					if (read_retry >= 100) {
 						errorLog(rc, device_no, error_count);
 						break;
 					}
@@ -234,6 +314,10 @@ namespace MethaneGasConcentrationProject {
 			}
 
 		}
+		catch (System::TimeoutException^ e) {
+			errorMsg = "COMポート通信タイムアウトが発生しました。";
+
+		}
 		catch (System::Exception^ e) {
 			errorMsg = "子機[" + device_no + "]からのデータの取得時にI/Oエラーが発生しました。";
 
@@ -259,6 +343,10 @@ namespace MethaneGasConcentrationProject {
 		else if ((rc == 17) || (rc == 18)) {
 			// 子機間通信エラー
 			errorMsg = "子機[" + device_no + "]からのデータの取得時に子機間通信エラーが発生しました。" + status_msg[rc][0];
+		}
+		else if (rc == 16) {
+			// 中継機間通信エラー
+			errorMsg = "子機[" + device_no + "]からのデータの取得時に中継機間の無線通信エラーが発生しました。" + status_msg[rc][0];
 		}
 		else {
 			// コマンドエラー

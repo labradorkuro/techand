@@ -90,6 +90,7 @@ namespace MethaneGasConcentrationProject {
 				errorCount++;
 				if (errorCount >= properties->getRetryLimit()) {
 					data->status = -1;
+					LogFile::writeFile(serialPortProc->getErrorMsg() + " (retry = " + i + ")", false);
 				}
 				else {
 					data->status = 1;
@@ -122,23 +123,20 @@ namespace MethaneGasConcentrationProject {
 		bool rc2 = false;
 		float methane = 0;
 		float temp = 0;
+		unsigned char relay_no = properties->getRelay_no();	// 中継器番号を取得。0の時は中継機なし
 #ifdef DEBUG
 		methane = now->Second; // debug
 		temp = now->Minute; // debug
 		rc1 = true; // debug
 		rc2 = true; // debug
 #endif
-#ifdef DEBUG2
-		temp = now->Minute; // debug
-		rc1 = true; // debug
-#endif
 		float ammeter = 0;
 #ifndef DEBUG		
 		// 温度値の取得
 #ifndef DEBUG2		
 		if (!abort) {	// エラーリトライタイムアウトチェック
-			if (serialPortProc->startTrendData('1')) {
-				if (serialPortProc->readTrendData('1')) {
+			if (serialPortProc->startTrendData('1',relay_no)) {
+				if (serialPortProc->readTrendData('1',relay_no)) {
 					temp = serialPortProc->getTemperature();
 					data->setBattery(1, serialPortProc->getBattery(1));
 					data->setRssi(1, serialPortProc->getRSSI(1));
@@ -147,10 +145,25 @@ namespace MethaneGasConcentrationProject {
 			}
 		}
 #endif
+#ifdef DEBUG2		
+		// DEBUG 1台の子機で2台での動作をさせる
+		if (!abort) {	// エラーリトライタイムアウトチェック
+			if (serialPortProc->startTrendData('2', relay_no)) {
+				if (serialPortProc->readTrendData('2', relay_no)) {
+					temp = serialPortProc->getTemperature();
+					data->setBattery(1, serialPortProc->getBattery(1));
+					data->setRssi(1, serialPortProc->getRSSI(1));
+					rc1 = true;
+				}
+			}
+		}
+		temp = now->Minute; // debug
+		rc1 = true; // debug
+#endif
 		if (!abort) {	// エラーリトライタイムアウトチェック
 			// 電流値の取得
-			if (serialPortProc->startTrendData('2')) {
-				if (serialPortProc->readTrendData('2')) {
+			if (serialPortProc->startTrendData('2',relay_no)) {
+				if (serialPortProc->readTrendData('2', relay_no)) {
 					ammeter = serialPortProc->getAmmeter();
 					data->setBattery(2, serialPortProc->getBattery(2));
 					data->setRssi(2, serialPortProc->getRSSI(2));

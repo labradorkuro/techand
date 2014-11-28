@@ -83,6 +83,15 @@ namespace MethaneGasConcentrationProject {
 									setRetryLimit(3);
 								}
 							}
+							else if (String::Compare(prop[0], "RelayNo") == 0){
+								bool result = Int32::TryParse(prop[1], number);
+								if (result) {
+									setRelay_no(number);
+								}
+								else {
+									setRelay_no(0);
+								}
+							}
 						}
 					}
 				}
@@ -112,7 +121,7 @@ namespace MethaneGasConcentrationProject {
 		try
 		{
 			String^ line = "Interval:" + getInterval() + ",DataFolder:" + getDataFolder() + ",Port:" + getPortNo()
-				+ ",ErrorRetry:" + getErrorRetry() + ",RetryLimit:" + getRetryLimit();
+				+ ",ErrorRetry:" + getErrorRetry() + ",RetryLimit:" + getRetryLimit() + ",RelayNo:" + getRelay_no();
 			try {
 				File::WriteAllText(fileName, line);
 			}
@@ -157,6 +166,12 @@ namespace MethaneGasConcentrationProject {
 	}
 	int Properties::getRetryLimit() {
 		return retryLimit;
+	}
+	void Properties::setRelay_no(int val) {
+		relay_no = val;
+	}
+	int Properties::getRelay_no() {
+		return relay_no;
 	}
 
 }

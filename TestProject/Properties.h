@@ -16,6 +16,7 @@ namespace MethaneGasConcentrationProject {
 		System::String^ propertyFileName = "mgc.properties";
 		int errorRetry = 50;			// 通信エラー時のリトライ回数
 		int retryLimit = 144;	// 1日のエラー回数制限
+		int relay_no = 0;			// 中継機番号 0の時は中継機なし
 	public:
 		int temp_corrected_value = 20;
 		float concentration_factor = 2.3;
@@ -36,5 +37,7 @@ namespace MethaneGasConcentrationProject {
 		int getErrorRetry();
 		void setRetryLimit(int val);
 		int getRetryLimit();
+		void setRelay_no(int no);
+		int getRelay_no();
 	};
 }
