@@ -52,8 +52,8 @@ namespace MethaneGasConcentrationProject {
 			if (!serialPort->IsOpen) {
 				serialPort->PortName = port;
 				serialPort->Open();
-				serialPort->ReadTimeout = 1000;
-				serialPort->WriteTimeout = 1000;
+				//serialPort->ReadTimeout = 5000;
+				//serialPort->WriteTimeout = 5000;
 			}
 		}
 		catch (System::Exception^ e){

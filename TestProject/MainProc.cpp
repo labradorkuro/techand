@@ -82,6 +82,10 @@ namespace MethaneGasConcentrationProject {
 					// 正常終了
 					break;
 				}
+				else if (data->status == -2){
+					// ファイル書込みエラー
+					break;
+				}
 			}
 			if (data->status == -1) {
 				// エラー確定
@@ -218,10 +222,16 @@ namespace MethaneGasConcentrationProject {
 			int rc = dataFile->writeFile(MonthlyDataFileName, data);
 			if (rc < 0) {
 				// Error
+				data->status = -2;
+				data->errorMsg = "データファイル書込みエラーです";
+				return data;
 			}
 			rc = dataFile->writeFile(dailyDataFileName, data);
 			if (rc < 0) {
 				// Error
+				data->status = -2;
+				data->errorMsg = "データファイル書込みエラーです";
+				return data;
 			}
 
 			// グラフ表示用に当日のデータファイルを読込む
